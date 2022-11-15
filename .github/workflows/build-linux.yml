@@ -33,21 +33,21 @@ jobs:
       # Setup python
       - name: System Setup
         run: |
-          pip3 install pyinstaller pyqt5 darkdetect
+          pip3 install pyinstaller pyqt5 darkdetect pyserial
 
       # Build the installer
       - name: Build Linux Installer
         run: |
-          pyinstaller --onefile --clean --name RTK_Uploader --noconsole --distpath=. --icon=RTK_Uploader/resource/RTK.ico --add-binary="RTK_Uploader/resource/RTK_Surveyor_Partitions_4MB.bin:." --add-binary="RTK_Uploader/resource/RTK_Surveyor_Partitions_16MB.bin:." --add-binary="RTK_Uploader/resource/RTK_Surveyor.ino.bootloader.bin:." --add-binary="RTK_Uploader/resource/boot_app0.bin:." --add-binary="RTK_Uploader/resource/RTK.png:." --add-data="RTK_Uploader/resource/*:resource/" RTK_Firmware_Uploader.py
-          gzip RTK_Uploader
-          mv RTK_Uploader.gz RTK_Uploader.linux.gz
+          pyinstaller --onefile --clean --name RTKUploader --noconsole --distpath=. --icon=RTK_Firmware_Uploader/resource/RTK.ico --add-binary="RTK_Firmware_Uploader/resource/RTK_Surveyor_Partitions_4MB.bin:." --add-binary="RTK_Firmware_Uploader/resource/RTK_Surveyor_Partitions_16MB.bin:." --add-binary="RTK_Firmware_Uploader/resource/RTK_Surveyor.ino.bootloader.bin:." --add-binary="RTK_Firmware_Uploader/resource/boot_app0.bin:." --add-binary="RTK_Firmware_Uploader/resource/RTK.png:." --add-data="RTK_Firmware_Uploader/resource/*:resource/" RTK_Firmware_Upload.py
+          gzip RTKUploader
+          mv RTKUploader.gz RTKUploader.linux.gz
           
       - uses: actions/upload-artifact@v3
         with:
-          name: RTK_Uploader.linux.gz
-          path: RTK_Uploader.linux.gz
+          name: RTKUploader.linux.gz
+          path: RTKUploader.linux.gz
 
       - id: output-installer
-        run: echo "::set-output name=filename::RTK_Uploader.linux.gz"
+        run: echo "::set-output name=filename::RTKUploader.linux.gz"
         
         

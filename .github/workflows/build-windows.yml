@@ -33,30 +33,30 @@ jobs:
       # Setup python
       - name: System Setup
         run: |
-          pip3 install pyinstaller pyqt5 darkdetect
+          pip3 install pyinstaller pyqt5 darkdetect pyserial
         
       # Build the installer
       - name: Build Windows Installer
         run: |
-          pyinstaller --onefile --clean --name RTK_Uploader --noconsole --distpath=. --icon=RTK_Uploader\resource\RTK.ico --add-binary="RTK_Uploader\resource\RTK_Surveyor_Partitions_4MB.bin;." --add-binary="RTK_Uploader\resource\RTK_Surveyor_Partitions_16MB.bin;." --add-binary="RTK_Uploader\resource\RTK_Surveyor.ino.bootloader.bin;." --add-binary="RTK_Uploader\resource\boot_app0.bin;." --add-binary="RTK_Uploader\resource\RTK.png;." --add-data="RTK_Uploader\resource\*;resource\" RTK_Firmware_Uploader.py
+          pyinstaller --onefile --clean --name RTKUploader --noconsole --distpath=. --icon=RTK_Firmware_Uploader\resource\RTK.ico --add-binary="RTK_Firmware_Uploader\resource\RTK_Surveyor_Partitions_4MB.bin;." --add-binary="RTK_Firmware_Uploader\resource\RTK_Surveyor_Partitions_16MB.bin;." --add-binary="RTK_Firmware_Uploader\resource\RTK_Surveyor.ino.bootloader.bin;." --add-binary="RTK_Firmware_Uploader\resource\boot_app0.bin;." --add-binary="RTK_Firmware_Uploader\resource\RTK.png;." --add-data="RTK_Firmware_Uploader\resource\*;resource\" RTK_Firmware_Upload.py
                     
       - name: Compress Installer
         shell: powershell
         run: |
           $compress = @{
-            Path = ".\RTK_Uploader.exe"
+            Path = ".\RTKUploader.exe"
             CompressionLevel = "Fastest"
-            DestinationPath = ".\RTK_Uploader.win.zip"
+            DestinationPath = ".\RTKUploader.win.zip"
             }
           Compress-Archive @compress
         
       - uses: actions/upload-artifact@v3
         with:
-          name: RTK_Uploader.win.zip
-          path: RTK_Uploader.win.zip
+          name: RTKUploader.win.zip
+          path: RTKUploader.win.zip
           
       - id: output-installer
-        run: echo "::set-output name=filename::RTK_Uploader.win.zip"
+        run: echo "::set-output name=filename::RTKUploader.win.zip"
     
         
         

@@ -21,13 +21,6 @@ from PyQt5.QtWidgets import QWidget, QLabel, QComboBox, QGridLayout, \
 from PyQt5.QtGui import QCloseEvent, QTextCursor, QIcon, QFont
 from PyQt5.QtSerialPort import QSerialPortInfo
 
-import esptool
-from esptool import ESPLoader
-from esptool import UnsupportedCommandError
-from esptool import NotSupportedError
-from esptool import NotImplementedInROMError
-from esptool import FatalError
-
 _APP_VERSION = "v1.4.0"
 _APP_NAME = "RTK Firmware Uploader"
 
@@ -45,6 +38,7 @@ import darkdetect
 
 # import action things - the .syntax is used since these are part of the package
 from .au_action import AxJob
+from .au_act_esptool import AUxEsptoolUploadFirmware
 from .au_worker import AUxWorker
 
 #----------------------------------------------------------------
@@ -88,45 +82,6 @@ def gen_serial_ports() -> Iterator[Tuple[str, str, str]]:
     ports = QSerialPortInfo.availablePorts()
     return ((p.description(), p.portName(), p.systemLocation()) for p in ports)
 
-class messageRedirect(QObject):
-    """Wrap a class around a QPlainTextEdit so we can redirect stdout and stderr to it"""
-
-    def __init__(self, edit, out=None, flashSize=None) -> None:
-        self.edit = edit
-        self.out = out
-        self.flashSize = flashSize
-
-    @pyqtSlot(str)
-    def write(self, msg: str) -> None:
-        if msg.startswith("\r"):
-            self.edit.moveCursor(QTextCursor.StartOfLine, QTextCursor.KeepAnchor)
-            self.edit.cut()
-            self.edit.insertPlainText(msg[1:])
-        else:
-            self.edit.insertPlainText(msg)
-        self.edit.ensureCursorVisible()
-        self.edit.repaint()
-        #QApplication.processEvents() # This prevents the circle of doom...
-
-        if self.out: # Echo to out (stdout) too if desired
-            self.out.write(msg)
-
-        if self.flashSize:
-            if msg.find("Detected flash size: 4MB") >= 0:
-                self.flashSize[0] = 4
-            elif msg.find("Detected flash size: 8MB") >= 0:
-                self.flashSize[0] = 8
-            elif msg.find("Detected flash size: 16MB") >= 0:
-                self.flashSize[0] = 16
-            elif msg.find("Detected flash size: ") >= 0:
-                self.flashSize[0] = 0
-
-    def flush(self) -> None:
-        None
-
-    def isatty(self):
-        return True
-
 # noinspection PyArgumentList
 
 class MainWidget(QWidget):
@@ -138,7 +93,7 @@ class MainWidget(QWidget):
     def __init__(self, parent: QWidget = None) -> None:
         super().__init__(parent)
 
-        self.flashSize = [0] # flashSize needs to be mutable. Use a single element list
+        self.flashSize = 0
 
         # File location line edit
         self.file_label = QLabel(self.tr('Firmware File:'))
@@ -233,19 +188,20 @@ class MainWidget(QWidget):
 
         self.setWindowTitle( _APP_NAME + " - " + _APP_VERSION)
 
-        # Initial Status Bar
-        self.statusBar().showMessage(_APP_NAME + " - " + _APP_VERSION, 10000)
-
         # setup our background worker thread ...
 
         # connect the signals from the background processor to callback
         # methods/slots. This makes it thread safe
-        self.sig_message.connect(self.log_message)
+        self.sig_message.connect(self.appendMessage)
         self.sig_finished.connect(self.on_finished)
 
         # Create our background worker object, which also will do work in it's
         # own thread.
         self._worker = AUxWorker(self.on_worker_callback)
+
+        # add the actions/commands for this app to the background processing thread.
+        # These actions are passed jobs to execute.
+        self._worker.add_action(AUxEsptoolUploadFirmware())
 
     #--------------------------------------------------------------
     # callback function for the background worker.
@@ -262,6 +218,26 @@ class MainWidget(QWidget):
             self.sig_finished.emit(arg)
 
     @pyqtSlot(str)
+    def appendMessage(self, msg: str) -> None:
+        if msg.startswith("\r"):
+            self.messageBox.moveCursor(QTextCursor.StartOfLine, QTextCursor.KeepAnchor)
+            self.messageBox.cut()
+            self.messageBox.insertPlainText(msg[1:])
+        else:
+            self.messageBox.insertPlainText(msg)
+        self.messageBox.ensureCursorVisible()
+        self.messageBox.repaint()
+
+        if msg.find("Detected flash size: 4MB") >= 0:
+            self.flashSize = 4
+        elif msg.find("Detected flash size: 8MB") >= 0:
+            self.flashSize = 8
+        elif msg.find("Detected flash size: 16MB") >= 0:
+            self.flashSize = 16
+        elif msg.find("Detected flash size: ") >= 0:
+            self.flashSize = 0
+
+    @pyqtSlot(str)
     def writeMessage(self, msg: str) -> None:
         self.messageBox.moveCursor(QTextCursor.End)
         #self.messageBox.ensureCursorVisible()
@@ -269,6 +245,20 @@ class MainWidget(QWidget):
         self.messageBox.ensureCursorVisible()
         self.messageBox.repaint()
         #QApplication.processEvents()
+
+    #--------------------------------------------------------------
+    # on_finished()
+    #
+    #  Slot for sending the "on finished" signal from the background thread
+    #
+    #  Called when the backgroudn job is finished and includes a status value
+    @pyqtSlot(int)
+    def on_finished(self) -> None:
+
+        # re-enable the UX
+        self.disable_interface(False)
+
+        self.running = False
 
     def _load_settings(self) -> None:
         """Load settings on startup."""
@@ -363,6 +353,9 @@ class MainWidget(QWidget):
         except:
             pass
 
+        # shutdown the background worker/stop it so the app exits correctly
+        self._worker.shutdown()
+
         event.accept()
 
     def on_refresh_btn_pressed(self) -> None:
@@ -393,6 +386,16 @@ class MainWidget(QWidget):
     #     if fileName:
     #         self.partitionFileLocation_lineedit.setText(fileName)
 
+    #--------------------------------------------------------------
+    # disable_interface()
+    #
+    # Enable/Disable portions of the ux - often used when a job is running
+    #
+    def disable_interface(self, bDisable=False):
+
+        self.upload_btn.setDisabled(bDisable)
+        self.reset_btn.setDisabled(bDisable)
+
     def on_reset_btn_pressed(self) -> None:
         """Reset the ESP32"""
         portAvailable = False
@@ -416,17 +419,17 @@ class MainWidget(QWidget):
         #command.extend(["--baud",self.baudRate])
         command.extend(["--before","default_reset","run"])
 
-        self.writeMessage("Command: esptool.main(%s)\n\n" % " ".join(command))
 
-        try:
-            esptool.main(command)
-        except (ValueError, IOError, FatalError, ImportError, NotImplementedInROMError, UnsupportedCommandError, NotSupportedError, RuntimeError) as err:
-            self.writeMessage(str(err))
-        except:
-            pass
+        # Create a job and add it to the job queue. The worker thread will pick this up and
+        # process the job. Can set job values using dictionary syntax, or attribute assignments
+        #
+        # Note - the job is defined with the ID of the target action
+        theJob = AxJob(AUxEsptoolUploadFirmware.ACTION_ID, {"command":command})
 
-        self.messageBox.ensureCursorVisible()
-        self.messageBox.repaint()
+        # Send the job to the worker to process
+        self._worker.add_job(theJob)
+
+        self.disable_interface(True)
 
     def on_upload_btn_pressed(self) -> None:
         """Upload the firmware"""
@@ -467,7 +470,7 @@ class MainWidget(QWidget):
         except:
             pass
 
-        self.flashSize[0] = 0
+        self.flashSize = 0
 
         self.writeMessage("Detecting flash size\n\n")
 
@@ -477,27 +480,32 @@ class MainWidget(QWidget):
         command.extend(["--baud",self.baudRate])
         command.extend(["flash_id"])
 
-        try:
-            esptool.main(command)
-        except (ValueError, IOError, FatalError, ImportError, NotImplementedInROMError, UnsupportedCommandError, NotSupportedError, RuntimeError) as err:
-            self.writeMessage(str(err))
-            self.messageBox.ensureCursorVisible()
-            self.messageBox.repaint()
-            return
-        except:
-            self.messageBox.ensureCursorVisible()
-            self.messageBox.repaint()
-            return
+        # Create a job and add it to the job queue. The worker thread will pick this up and
+        # process the job. Can set job values using dictionary syntax, or attribute assignments
+        #
+        # Note - the job is defined with the ID of the target action
+        theJob = AxJob(AUxEsptoolUploadFirmware.ACTION_ID, {"command":command})
 
-        if self.flashSize[0] == 0:
+        self.running = True
+
+        # Send the job to the worker to process
+        self._worker.add_job(theJob)
+
+        self.disable_interface(True)
+
+        # Wait for the job to finish
+        while (self.running):
+            QApplication.processEvents()
+
+        if self.flashSize == 0:
             self.writeMessage("Flash size not detected! Defaulting to 16MB\n")
-            self.flashSize[0] = 16
+            self.flashSize = 16
         else:
-            self.writeMessage("Flash size is " + str(self.flashSize[0]) + "MB\n")
+            self.writeMessage("Flash size is " + str(self.flashSize) + "MB\n")
 
         thePartitionFileName = ''
         firmwareSizeCorrect = True
-        if self.flashSize[0] == 16:
+        if self.flashSize == 16:
             thePartitionFileName = resource_path("RTK_Surveyor_Partitions_16MB.bin")
             # if self.theFileName.find("16MB") < 0:
             #     firmwareSizeCorrect = False
@@ -524,19 +532,18 @@ class MainWidget(QWidget):
         command.extend(["0xe000",resource_path("boot_app0.bin")])
         command.extend(["0x10000",self.theFileName])
 
-        self.writeMessage("Command: esptool.main(%s)\n\n" % " ".join(command))
-
         #print("python esptool.py %s\n\n" % " ".join(command)) # Useful for debugging - cut and paste into a command prompt
 
-        try:
-            esptool.main(command)
-        except (ValueError, IOError, FatalError, ImportError, NotImplementedInROMError, UnsupportedCommandError, NotSupportedError, RuntimeError) as err:
-            self.writeMessage(str(err))
-        except:
-            pass
+        # Create a job and add it to the job queue. The worker thread will pick this up and
+        # process the job. Can set job values using dictionary syntax, or attribute assignments
+        #
+        # Note - the job is defined with the ID of the target action
+        theJob = AxJob(AUxEsptoolUploadFirmware.ACTION_ID, {"command":command})
 
-        self.messageBox.ensureCursorVisible()
-        self.messageBox.repaint()
+        # Send the job to the worker to process
+        self._worker.add_job(theJob)
+
+        self.disable_interface(True)
 
 def startUploaderGUI():
     """Start the GUI"""
@@ -547,12 +554,6 @@ def startUploaderGUI():
     app.setWindowIcon(QIcon(resource_path("RTK.png")))
     app.setApplicationVersion(_APP_VERSION)
     w = MainWidget()
-    if 1: # Change to 0 to have the messages echoed on stdout
-        sys.stdout = messageRedirect(w.messageBox, flashSize=w.flashSize) # Divert stdout to messageBox. Report flash size via flashSize
-        sys.stderr = messageRedirect(w.messageBox) # Divert stderr to messageBox
-    else:
-        sys.stdout = messageRedirect(w.messageBox, flashSize=w.flashSize, out=sys.stdout) # Echo to stdout too
-        sys.stderr = messageRedirect(w.messageBox, out=sys.stderr) # Echo to stderr too
     w.show()
     sys.exit(app.exec_())
 
