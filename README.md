@@ -1,0 +1,1 @@
+The Artemis Firmware Uploader (AFU) is a simple to use GUI for updating firmware and the boot loader on Artemis based products.

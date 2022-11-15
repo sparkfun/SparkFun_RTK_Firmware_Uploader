@@ -1,0 +1,62 @@
+# This is a basic workflow to help you get started with Actions
+
+name: build-windows
+
+# Controls when the workflow will run
+on:
+  # this is a called workflow
+  workflow_call:
+    outputs:
+      build-file:
+        description: "The output of this build procsss"
+        value: ${{ jobs.windows-build-job.outputs.install-file }}
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # Build the installer on mac
+  windows-build-job:
+    # The type of runner that the job will run on
+    runs-on: windows-latest
+    
+    # Output
+    outputs:
+      install-file: ${{ steps.output-installer.outputs.filename }}
+      
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      # Setup python
+      - name: System Setup
+        run: |
+          pip3 install pyinstaller pyqt5 darkdetect
+        
+      # Build the installer
+      - name: Build Windows Installer
+        run: |
+          pyinstaller --onefile --clean --name RTK_Uploader --noconsole --distpath=. --icon=RTK_Uploader\resource\RTK.ico --add-binary="RTK_Uploader\resource\RTK_Surveyor_Partitions_4MB.bin;." --add-binary="RTK_Uploader\resource\RTK_Surveyor_Partitions_16MB.bin;." --add-binary="RTK_Uploader\resource\RTK_Surveyor.ino.bootloader.bin;." --add-binary="RTK_Uploader\resource\boot_app0.bin;." --add-binary="RTK_Uploader\resource\RTK.png;." --add-data="RTK_Uploader\resource\*;resource\" RTK_Firmware_Uploader.py
+                    
+      - name: Compress Installer
+        shell: powershell
+        run: |
+          $compress = @{
+            Path = ".\RTK_Uploader.exe"
+            CompressionLevel = "Fastest"
+            DestinationPath = ".\RTK_Uploader.win.zip"
+            }
+          Compress-Archive @compress
+        
+      - uses: actions/upload-artifact@v3
+        with:
+          name: RTK_Uploader.win.zip
+          path: RTK_Uploader.win.zip
+          
+      - id: output-installer
+        run: echo "::set-output name=filename::RTK_Uploader.win.zip"
+    
+        
+        

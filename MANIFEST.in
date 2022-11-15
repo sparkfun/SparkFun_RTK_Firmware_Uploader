@@ -1,0 +1,2 @@
+include RTK_Uploader/resource/*.*
+include DESCRIPTION.md
