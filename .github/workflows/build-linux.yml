@@ -48,4 +48,4 @@ jobs:
           path: RTKUploader.linux.gz
 
       - id: output-installer
-        run: echo "::set-output name=filename::RTKUploader.linux.gz"
+        run: echo "filename=RTKUploader.linux.gz" >> $GITHUB_OUTPUT

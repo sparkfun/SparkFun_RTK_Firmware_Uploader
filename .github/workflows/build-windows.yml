@@ -55,5 +55,6 @@ jobs:
           name: RTKUploader.win.zip
           path: RTKUploader.win.zip
           
+      # Use Windows powershell notation: $env:GITHUB_OUTPUT
       - id: output-installer
-        run: echo "::set-output name=filename::RTKUploader.win.zip"
+        run: echo "filename=RTKUploader.win.zip" >> $env:GITHUB_OUTPUT

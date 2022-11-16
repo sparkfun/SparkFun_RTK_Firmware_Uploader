@@ -50,6 +50,6 @@ jobs:
           path: RTKUploader.dmg
 
       - id: output-installer
-        run: echo "::set-output name=filename::RTKUploader.dmg"
+        run: echo "filename=RTKUploader.dmg" >> $GITHUB_OUTPUT
         
         
