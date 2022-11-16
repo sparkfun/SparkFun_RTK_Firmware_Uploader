@@ -6,7 +6,7 @@ name: build-and-release
 on:
   
   # Trigger on a push
-  push:
+  #push:
   
   # Trigger on a published release
   release:
@@ -47,7 +47,7 @@ jobs:
           name: ${{ needs.call-linux-build.outputs.build-file }}
       - uses: actions/download-artifact@v3
         with:
-          name: ${{ needs.call-windows-build.outputs.build-file }}
+          name: ${{ needs.call-windows-build.outputs.win-build-file }}
       - uses: actions/download-artifact@v3
         with:
           name: ${{ needs.call-python-build.outputs.build-file }}
@@ -60,6 +60,6 @@ jobs:
           files: |
             ${{ needs.call-macos-build.outputs.build-file }}
             ${{ needs.call-linux-build.outputs.build-file }}
-            ${{ needs.call-windows-build.outputs.build-file }}
+            ${{ needs.call-windows-build.outputs.win-build-file }}
             ${{ needs.call-python-build.outputs.build-file }}            
 

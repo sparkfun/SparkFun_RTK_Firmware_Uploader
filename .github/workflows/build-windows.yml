@@ -7,9 +7,9 @@ on:
   # this is a called workflow
   workflow_call:
     outputs:
-      build-file:
+      win-build-file:
         description: "The output of this build procsss"
-        value: ${{ jobs.windows-build-job.outputs.install-file }}
+        value: ${{ jobs.windows-build-job.outputs.win-install-file }}
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -20,7 +20,7 @@ jobs:
     
     # Output
     outputs:
-      install-file: ${{ steps.output-installer.outputs.filename }}
+      win-install-file: ${{ steps.output-installer.outputs.win-filename }}
       
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -56,7 +56,7 @@ jobs:
           path: RTKUploader.win.zip
           
       - id: output-installer
-        run: echo "filename=RTKUploader.win.zip" >> $GITHUB_OUTPUT    
+        run: echo "win-filename=RTKUploader.win.zip" >> $GITHUB_OUTPUT    
     
         
         
