@@ -10,9 +10,9 @@ on:
       build-file:
         description: "The output of this build procsss"
         value: ${{ jobs.python-build-job.outputs.install-file }}
-      build-path:
+      build-package:
         description: "The output of this build procsss"
-        value: ${{ jobs.python-build-job.outputs.install-file }}
+        value: ${{ jobs.python-build-job.outputs.install-package }}
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -24,6 +24,7 @@ jobs:
     # Output
     outputs:
       install-file: ${{ steps.output-installer.outputs.filename }}
+      install-package: ${{ steps.output-installer.outputs.packagename }}
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -54,4 +55,6 @@ jobs:
           echo "PACKAGE_NAME=$(ls *.tar.gz)" >> $GITHUB_ENV
 
       - id: output-installer
-        run: echo "filename=${{ env.PACKAGE_NAME }}" >> $GITHUB_OUTPUT
+        run: |
+          echo "filename=python-install-package" >> $GITHUB_OUTPUT
+          echo "packagename=${{ env.PACKAGE_NAME }}" >> $GITHUB_OUTPUT
