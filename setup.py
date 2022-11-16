@@ -1,12 +1,24 @@
 import setuptools
 from codecs import open  # To use a consistent encoding
 from os import path
+from platform import system, machine
+import subprocess
 
 here = path.abspath(path.dirname(__file__))
 
 # Get the long description from the relevant file
 with open(path.join(here, 'DESCRIPTION.md'), encoding='utf-8') as f:
     long_description = f.read()
+    
+install_deps = ['darkdetect', 'pyserial']
+
+# Raspberry Pi needs python3-pyqt5 and python3-pyqt5.qtserialport
+# which can only be installed with apt-get
+if (system() == "Linux") and (machine() == "armv7l"):
+    cmd = ['sudo','apt-get','install','python3-pyqt5','python3-pyqt5.qtserialport']
+    subprocess.run(cmd)
+else:
+    install_deps.append('pyqt5')
 
 setuptools.setup(
     name='RTK_Firmware_Uploader',
@@ -70,7 +82,7 @@ setuptools.setup(
     # project is installed. For an analysis of "install_requires" vs pip's
     # requirements files see:
     # https://packaging.python.org/en/latest/technical.html#install-requires-vs-requirements-files
-    install_requires=['pyqt5', 'darkdetect', 'pyserial'],
+    install_requires=install_deps,
 
     # If there are data files included in your packages that need to be
     # installed, specify them here.  If using Python 2.6 or less, then these

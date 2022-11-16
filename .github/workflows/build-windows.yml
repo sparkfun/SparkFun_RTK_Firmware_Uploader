@@ -56,7 +56,7 @@ jobs:
           path: RTKUploader.win.zip
           
       - id: output-installer
-        run: echo "::set-output name=filename::RTKUploader.win.zip"
+        run: echo "filename=RTKUploader.win.zip" >> $GITHUB_OUTPUT    
     
         
         
