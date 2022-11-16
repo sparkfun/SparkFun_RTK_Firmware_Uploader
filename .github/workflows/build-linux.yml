@@ -49,5 +49,3 @@ jobs:
 
       - id: output-installer
         run: echo "filename=RTKUploader.linux.gz" >> $GITHUB_OUTPUT
-        
-        

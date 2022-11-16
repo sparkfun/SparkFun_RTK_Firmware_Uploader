@@ -21,7 +21,7 @@ from PyQt5.QtWidgets import QWidget, QLabel, QComboBox, QGridLayout, \
 from PyQt5.QtGui import QCloseEvent, QTextCursor, QIcon, QFont
 from PyQt5.QtSerialPort import QSerialPortInfo
 
-_APP_VERSION = "v1.4.4"
+_APP_VERSION = "v1.4.5"
 _APP_NAME = "RTK Firmware Uploader"
 
 # sub folder for our resource files

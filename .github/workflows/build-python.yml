@@ -46,5 +46,4 @@ jobs:
           path: dist
 
       - id: output-installer
-        run: echo "filename=python-install-package" >> $GITHUB_OUTPUT        
-        
+        run: echo "filename=python-install-package" >> $GITHUB_OUTPUT
