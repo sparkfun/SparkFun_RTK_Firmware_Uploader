@@ -49,7 +49,9 @@ jobs:
           path: dist
 
       - name: Extract package name
-        run: echo "PACKAGE_NAME=$(ls dist/*.tar.gz)" >> $GITHUB_ENV
+        run: |
+          cd dist
+          echo "PACKAGE_NAME=$(ls *.tar.gz)" >> $GITHUB_ENV
 
       - id: output-installer
         run: echo "filename=${{ env.PACKAGE_NAME }}" >> $GITHUB_OUTPUT
