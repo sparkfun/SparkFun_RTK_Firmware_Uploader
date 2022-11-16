@@ -9,7 +9,7 @@ on:
     outputs:
       build-file:
         description: "The output of this build procsss"
-        value: ${{ jobs.linux-build-job.outputs.install-file }}
+        value: ${{ jobs.python-build-job.outputs.install-file }}
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -46,5 +46,5 @@ jobs:
           path: dist
 
       - id: output-installer
-        run: echo "filename=python%2Dinstall%2Dpackage" >> $GITHUB_OUTPUT        
+        run: echo "filename=python-install-package" >> $GITHUB_OUTPUT        
         
