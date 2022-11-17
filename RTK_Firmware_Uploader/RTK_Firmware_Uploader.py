@@ -7,6 +7,12 @@ Please see the LICENSE.md for more details
 
 """
 
+# import action things - the .syntax is used since these are part of the package
+from .au_worker import AUxWorker
+from .au_action import AxJob
+from .au_act_esptool import AUxEsptoolDetectFlash, AUxEsptoolUploadFirmware, AUxEsptoolResetESP32
+
+import darkdetect
 import sys
 import os
 import os.path
@@ -21,7 +27,6 @@ from PyQt5.QtWidgets import QWidget, QLabel, QComboBox, QGridLayout, \
 from PyQt5.QtGui import QCloseEvent, QTextCursor, QIcon, QFont
 from PyQt5.QtSerialPort import QSerialPortInfo
 
-_APP_VERSION = "v1.4.10"
 _APP_NAME = "RTK Firmware Uploader"
 
 # sub folder for our resource files
@@ -33,13 +38,15 @@ def resource_path(relative_path):
     base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
     return os.path.join(base_path, _RESOURCE_DIRECTORY, relative_path)
 
-# determine the current GUI style
-import darkdetect
+def get_version(rel_path: str) -> str:
+    with open(resource_path(rel_path)) as fp:
+        for line in read(fp).splitlines():
+            if line.startswith("__version__"):
+                delim = '"' if '"' in line else "'"
+                return line.split(delim)[1]
+        raise RuntimeError("Unable to find version string.")
 
-# import action things - the .syntax is used since these are part of the package
-from .au_action import AxJob
-from .au_act_esptool import AUxEsptoolUploadFirmware
-from .au_worker import AUxWorker
+_APP_VERSION = get_version("_version.py")
 
 #----------------------------------------------------------------
 # ux_is_darkmode()
@@ -87,8 +94,8 @@ def gen_serial_ports() -> Iterator[Tuple[str, str, str]]:
 class MainWidget(QWidget):
     """Main Widget."""
 
-    sig_message     = pyqtSignal(str)
-    sig_finished    = pyqtSignal(int)
+    sig_message = pyqtSignal(str)
+    sig_finished = pyqtSignal(int, str, int)
 
     def __init__(self, parent: QWidget = None) -> None:
         super().__init__(parent)
@@ -210,13 +217,24 @@ class MainWidget(QWidget):
     # so signals and used to relay the call to the GUI running on the
     # main thread
 
-    def on_worker_callback(self, msg_type, arg):
+    def on_worker_callback(self, *args): #msg_type, arg):
 
+        # need a min of 2 args (id, arg)
+        if len(args) < 2:
+            self.writeMessage("Invalid parameters from the uploader.")
+            return
+
+        msg_type = args[0]
         if msg_type == AUxWorker.TYPE_MESSAGE:
-            self.sig_message.emit(arg)
+            self.sig_message.emit(args[1])
         elif msg_type == AUxWorker.TYPE_FINISHED:
-            self.sig_finished.emit(arg)
+            # finished takes 3 args - status, job type, and job id
+            if len(args) < 4:
+                self.writeMessage("Invalid parameters from the uploader.");
+                return;
 
+            self.sig_finished.emit(args[1], args[2], args[3])
+            
     @pyqtSlot(str)
     def appendMessage(self, msg: str) -> None:
         if msg.startswith("\r"):
@@ -252,13 +270,16 @@ class MainWidget(QWidget):
     #  Slot for sending the "on finished" signal from the background thread
     #
     #  Called when the backgroudn job is finished and includes a status value
-    @pyqtSlot(int)
-    def on_finished(self) -> None:
+    @pyqtSlot(int, str, int)
+    def on_finished(self, action_type, job_id) -> None:
+
+        # If the flash detection is finished, trigger the upload
+        if action_type == "esptool-detect-flash":
+            do_upload();
 
         # re-enable the UX
-        self.disable_interface(False)
-
-        self.running = False
+        else:
+            self.disable_interface(False)
 
     def _load_settings(self) -> None:
         """Load settings on startup."""
@@ -407,7 +428,7 @@ class MainWidget(QWidget):
             return
 
         try:
-            self._save_settings() # Save the settings in case the upload crashes
+            self._save_settings() # Save the settings in case the command fails
         except:
             pass
 
@@ -419,12 +440,11 @@ class MainWidget(QWidget):
         #command.extend(["--baud",self.baudRate])
         command.extend(["--before","default_reset","run"])
 
-
         # Create a job and add it to the job queue. The worker thread will pick this up and
         # process the job. Can set job values using dictionary syntax, or attribute assignments
         #
         # Note - the job is defined with the ID of the target action
-        theJob = AxJob(AUxEsptoolUploadFirmware.ACTION_ID, {"command":command})
+        theJob = AxJob(AUxEsptoolResetESP32.ACTION_ID, {"command":command})
 
         # Send the job to the worker to process
         self._worker.add_job(theJob)
@@ -432,6 +452,42 @@ class MainWidget(QWidget):
         self.disable_interface(True)
 
     def on_upload_btn_pressed(self) -> None:
+        """Get ready to upload the firmware. First, detect the flash size"""
+        portAvailable = False
+        for desc, name, sys in gen_serial_ports():
+            if (sys == self.port):
+                portAvailable = True
+        if (portAvailable == False):
+            self.writeMessage("Port No Longer Available")
+            return
+
+        try:
+            self._save_settings() # Save the settings in case the command fails
+        except:
+            pass
+
+        self.flashSize = 0
+
+        self.writeMessage("Detecting flash size\n\n")
+
+        command = []
+        command.extend(["--chip","esp32"])
+        command.extend(["--port",self.port])
+        command.extend(["--baud",self.baudRate])
+        command.extend(["flash_id"])
+
+        # Create a job and add it to the job queue. The worker thread will pick this up and
+        # process the job. Can set job values using dictionary syntax, or attribute assignments
+        #
+        # Note - the job is defined with the ID of the target action
+        theJob = AxJob(AUxEsptoolDetectFlash.ACTION_ID, {"command":command})
+
+        # Send the job to the worker to process
+        self._worker.add_job(theJob)
+
+        self.disable_interface(True)
+
+    def do_upload(self) -> None:
         """Upload the firmware"""
         portAvailable = False
         for desc, name, sys in gen_serial_ports():
@@ -466,36 +522,9 @@ class MainWidget(QWidget):
         #     f.close()
 
         try:
-            self._save_settings() # Save the settings in case the upload crashes
+            self._save_settings() # Save the settings in case the command fails
         except:
             pass
-
-        self.flashSize = 0
-
-        self.writeMessage("Detecting flash size\n\n")
-
-        command = []
-        command.extend(["--chip","esp32"])
-        command.extend(["--port",self.port])
-        command.extend(["--baud",self.baudRate])
-        command.extend(["flash_id"])
-
-        # Create a job and add it to the job queue. The worker thread will pick this up and
-        # process the job. Can set job values using dictionary syntax, or attribute assignments
-        #
-        # Note - the job is defined with the ID of the target action
-        theJob = AxJob(AUxEsptoolUploadFirmware.ACTION_ID, {"command":command})
-
-        self.running = True
-
-        # Send the job to the worker to process
-        self._worker.add_job(theJob)
-
-        self.disable_interface(True)
-
-        # Wait for the job to finish
-        while (self.running):
-            QApplication.processEvents()
 
         if self.flashSize == 0:
             self.writeMessage("Flash size not detected! Defaulting to 16MB\n")
