@@ -42,9 +42,9 @@ If your RTK 'freezes' after the update, pressing ```Reset ESP32``` will get it g
 
 ## Installation
 
-Installation binaries are available for all major platforms (macOS, Window, and Linux) on the release page of the RTK Uploader GitHub repository. 
+Installation binaries are available for all major platforms (macOS, Window, and Linux) on the release page of the RTK Uploader GitHub repository:
 
-[RTK Uploader Release Page](https://github.com/sparkfun/SparkFun_RTK_Firmware_Uploader/releases)
+[**RTK Uploader Release Page**](https://github.com/sparkfun/SparkFun_RTK_Firmware_Uploader/releases)
 
 ### Windows
 * Download the github release zip file - *RTKUploader.win.zip.zip*
@@ -93,13 +93,13 @@ Notes:
 * Depending on your system, you might need to use the command `pip3`
 
 ### Raspberry Pi
-We've tested the Uploader on both 32-bit and 64-bit Raspberry Pi Debian. You will need to use the Python Package to install it.
+We've tested the Uploader on both 32-bit and 64-bit Raspberry Pi Debian. You will need to use the **Python Package** to install it.
 
 Notes:
 * On 32-bit Raspberry Pi, with both Python 2 and Python 3 installed, use `sudo pip3 install RTK_Firmware_Uploader-1.4.0.tar.gz`
   * By default, the executable will be placed in `/usr/local/bin`
 * On 64-bit Raspberry Pi, use `sudo pip install RTK_Firmware_Uploader-1.4.0.tar.gz`
-* The 'sudo' is required to let `setup.py` install `python3-pyqt5` and `python3-pyqt5.qtserialport` using `sudo apt-get install`
+* The `sudo` is required to let `setup.py` install `python3-pyqt5` and `python3-pyqt5.qtserialport` using `sudo apt-get install`
 
 ![Raspberry Pi 64-bit : Install](images/RPi_install.png)
 
