@@ -37,7 +37,7 @@ install_deps = ['darkdetect', 'pyserial']
 
 # Raspberry Pi needs python3-pyqt5 and python3-pyqt5.qtserialport
 # which can only be installed with apt-get
-if (system() == "Linux") and (machine() == "armv7l"):
+if (system() == "Linux") and ((machine() == "armv7l") or (machine() == "aarch64")):
     cmd = ['sudo','apt-get','install','python3-pyqt5','python3-pyqt5.qtserialport']
     subprocess.run(cmd)
 else:
