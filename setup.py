@@ -14,12 +14,15 @@ def resource_path(relative_path):
     return path.join(base_path, _RESOURCE_DIRECTORY, relative_path)
 
 def get_version(rel_path: str) -> str:
-    with open(resource_path(rel_path)) as fp:
-        for line in read(fp).splitlines():
-            if line.startswith("__version__"):
-                delim = '"' if '"' in line else "'"
-                return line.split(delim)[1]
-        raise RuntimeError("Unable to find version string.")
+    try: 
+        with open(resource_path(rel_path), encoding='utf-8') as fp:
+            for line in fp.read().splitlines():
+                if line.startswith("__version__"):
+                    delim = '"' if '"' in line else "'"
+                    return line.split(delim)[1]
+            raise RuntimeError("Unable to find version string.")
+    except:
+        raise RuntimeError("Unable to find _version.py.")
 
 _APP_VERSION = get_version("_version.py")
 

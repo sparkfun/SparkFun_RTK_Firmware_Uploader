@@ -39,12 +39,15 @@ def resource_path(relative_path):
     return os.path.join(base_path, _RESOURCE_DIRECTORY, relative_path)
 
 def get_version(rel_path: str) -> str:
-    with open(resource_path(rel_path)) as fp:
-        for line in read(fp).splitlines():
-            if line.startswith("__version__"):
-                delim = '"' if '"' in line else "'"
-                return line.split(delim)[1]
-        raise RuntimeError("Unable to find version string.")
+    try: 
+        with open(resource_path(rel_path), encoding='utf-8') as fp:
+            for line in fp.read().splitlines():
+                if line.startswith("__version__"):
+                    delim = '"' if '"' in line else "'"
+                    return line.split(delim)[1]
+            raise RuntimeError("Unable to find version string.")
+    except:
+        raise RuntimeError("Unable to find _version.py.")
 
 _APP_VERSION = get_version("_version.py")
 
@@ -208,7 +211,7 @@ class MainWidget(QWidget):
 
         # add the actions/commands for this app to the background processing thread.
         # These actions are passed jobs to execute.
-        self._worker.add_action(AUxEsptoolUploadFirmware())
+        self._worker.add_action(AUxEsptoolDetectFlash(), AUxEsptoolUploadFirmware(), AUxEsptoolResetESP32())
 
     #--------------------------------------------------------------
     # callback function for the background worker.
@@ -271,11 +274,15 @@ class MainWidget(QWidget):
     #
     #  Called when the backgroudn job is finished and includes a status value
     @pyqtSlot(int, str, int)
-    def on_finished(self, action_type, job_id) -> None:
+    def on_finished(self, status, action_type, job_id) -> None:
 
         # If the flash detection is finished, trigger the upload
-        if action_type == "esptool-detect-flash":
-            do_upload();
+        if action_type == AUxEsptoolDetectFlash.ACTION_ID:
+            self.do_upload()
+
+        # If the upload is finished, trigger a reset
+        elif action_type == AUxEsptoolUploadFirmware.ACTION_ID:
+            self.on_reset_btn_pressed()
 
         # re-enable the UX
         else:
