@@ -4,6 +4,28 @@ from os import path
 from platform import system, machine
 import subprocess
 
+# sub folder for our resource files
+_RESOURCE_DIRECTORY = "RTK_Firmware_Uploader/resource"
+
+#https://stackoverflow.com/a/50914550
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+    return path.join(base_path, _RESOURCE_DIRECTORY, relative_path)
+
+def get_version(rel_path: str) -> str:
+    try: 
+        with open(resource_path(rel_path), encoding='utf-8') as fp:
+            for line in fp.read().splitlines():
+                if line.startswith("__version__"):
+                    delim = '"' if '"' in line else "'"
+                    return line.split(delim)[1]
+            raise RuntimeError("Unable to find version string.")
+    except:
+        raise RuntimeError("Unable to find _version.py.")
+
+_APP_VERSION = get_version("_version.py")
+
 here = path.abspath(path.dirname(__file__))
 
 # Get the long description from the relevant file
@@ -26,7 +48,7 @@ setuptools.setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # http://packaging.python.org/en/latest/tutorial.html#version
-    version='1.4.10',
+    version=_APP_VERSION,
 
     description='Application to upload firmware to SparkFun RTK products',
     long_description=long_description,
