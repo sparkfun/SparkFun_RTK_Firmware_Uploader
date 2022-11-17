@@ -3,6 +3,7 @@ from codecs import open  # To use a consistent encoding
 from os import path
 from platform import system, machine
 import subprocess
+import sys
 
 # sub folder for our resource files
 _RESOURCE_DIRECTORY = "RTK_Firmware_Uploader/resource"
