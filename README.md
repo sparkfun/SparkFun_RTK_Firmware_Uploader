@@ -85,15 +85,23 @@ To install the Python package:
 At a command line - issue the package install command:
 
 * `pip install RTK_Firmware_Uploader-1.4.0.tar.gz`
-* Once installed, you can start the RTK Uploader App by issuing the command `artemis_upload` at the command line. (To see the command, you might need to start a new terminal, or issue a command like `rehash` depending on your platform/shell)
+* Once installed, you can start the RTK Uploader App by issuing the command `./RTK_Formware_Upload` at the command line. (To see the command, you might need to start a new terminal, or issue a command like `rehash` depending on your platform/shell)
 
 Notes:
 * A path might be needed to specify the install file location.
 * Depending on your platform, this command might need to be run as admin/root.
 * Depending on your system, you might need to use the command `pip3`
-* On Raspberry Pi, use `sudo pip3 install RTK_Firmware_Uploader-1.4.0.tar.gz`
-  * By default, the executable will be placed in `/usr/local/bin/RTK_Firmware_Upload`
 
+### Raspberry Pi
+We've tested the Uploader on both 32-bit and 64-bit Raspberry Pi Debian. You will need to use the Python Package to install it.
 
+Notes:
+* On 32-bit Raspberry Pi, with both Python 2 and Python 3 installed, use `sudo pip3 install RTK_Firmware_Uploader-1.4.0.tar.gz`
+  * By default, the executable will be placed in `/usr/local/bin`
+* On 64-bit Raspberry Pi, use `sudo pip install RTK_Firmware_Uploader-1.4.0.tar.gz`
+* The 'sudo' is required to let `setup.py` install `python3-pyqt5` and `python3-pyqt5.qtserialport` using `sudo apt-get install`
 
+![Raspberry Pi 64-bit : Install](images/RPi_install.png)
+
+![Raspberry Pi 64-bit : Install](images/RPi_Uploader.png)
 
