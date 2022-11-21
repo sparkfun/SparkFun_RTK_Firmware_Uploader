@@ -58,6 +58,7 @@ Installation binaries are available for all major platforms (macOS, Window, and 
 * A Finder window, with the contents of the file will open
 * Install the *RTKUploader.app* by dragging it on the *Applications* in the RTKUploader Finder Window, or copying the file to a desired location.
 * Once complete, unmount the RTKUploader disk image by right-clicking on the mounted disk in Finder and ejecting it.
+* You may need to install drivers for the CH340 USB interface chip. Full instructions can be found in our [CH340 Tutorial](https://learn.sparkfun.com/tutorials/how-to-install-ch340-drivers/all#mac-osx)
 
 To launch the RTK Uploader application:
 * Double-click RTKUploader.app to launch the application
@@ -72,6 +73,7 @@ To launch the RTK Uploader application:
 * Un-gzip the file, either by double-clicking in on the desktop, or using the `gunzip` command in a terminal window. This results in the file *RTKUploader* 
 * To run the application, the file must have *execute* permission. This is performed by selecting *Properties* from the file right-click menu, and then selecting permissions. You can also change permissions using the `chmod` command in a terminal window.
 * Once the application has execute permission, you can start the application a terminal window. Change directory's to the application location and issue `./RTKUploader`
+* You may need to install drivers for the CH340 USB interface chip. Full instructions can be found in our [CH340 Tutorial](https://learn.sparkfun.com/tutorials/how-to-install-ch340-drivers/all#linux)
 
 
 ### Python Package
