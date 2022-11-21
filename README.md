@@ -13,16 +13,15 @@ If you need to install the application, see the [Installation Section](#installa
 ## Upload Firmware
   
 * Attach the RTK product over USB
-* Click ```Refresh```
+* Click the ```COM Port``` combo box and select the correct COM port from the dropdown menu
 
-![Select Firmware](images/RTK_Uploader_Windows_2.png)
+![Select COM Port](images/RTK_Uploader_Windows_2.png)
 
-* Select the correct COM port from the dropdown menu
 * Adjust the Baud Rate if desired
-* Click ```Browse``` and select the firmware file you'd like to upload (should end in *.bin*)
+* Click ```Browse``` and select the firmware file you'd like to upload (the filename should end in *.bin*)
   * You can find the firmware in the [SparkFun_RTK_Firmware_Binaries repo on GitHub](https://github.com/sparkfun/SparkFun_RTK_Firmware_Binaries)
   * The older versions of the firmware are in a [separate folder](https://github.com/sparkfun/SparkFun_RTK_Firmware_Binaries/tree/main/PreviousVersions)
-  * If you have one of the earliest RTK Surveyors with 4MB flash, please select v1_12
+  * If you have one of the earliest RTK Surveyors with 4MB flash, please select **v1_12**
 
 ![Select Firmware](images/RTK_Uploader_Windows_4.png)
 
@@ -34,7 +33,7 @@ The selected firmware is then uploaded to the connected SparkFun RTK product. Up
 
 ## Reset ESP32
 
-Clicking the ```Reset ESP32``` button . This is helpful when the firmware update succeeds but does not reset the RTK correctly.
+Clicking the ```Reset ESP32``` button will reset the ESP32 processor. This is helpful when the firmware update succeeds but does not reset the RTK correctly.
 If your RTK 'freezes' after the update, pressing ```Reset ESP32``` will get it going again.
 
 ![Reset ESP32](images/RTK_Uploader_Windows_3.png)

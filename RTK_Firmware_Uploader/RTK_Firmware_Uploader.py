@@ -51,6 +51,18 @@ def get_version(rel_path: str) -> str:
 
 _APP_VERSION = get_version("_version.py")
 
+# ----------------------------------------------------------------
+# hack to know when a combobox menu is being shown. Helpful if contents
+# of list are dynamic -- like serial ports.
+
+class AUxComboBox(QComboBox):
+
+    popupAboutToBeShown = pyqtSignal()
+
+    def showPopup(self):
+        self.popupAboutToBeShown.emit()
+        super().showPopup()
+
 #----------------------------------------------------------------
 # ux_is_darkmode()
 #
@@ -131,13 +143,14 @@ class MainWidget(QWidget):
 
         # Port Combobox
         self.port_label = QLabel(self.tr('COM Port:'))
-        self.port_combobox = QComboBox()
+        self.port_combobox = AUxComboBox()
         self.port_label.setBuddy(self.port_combobox)
         self.update_com_ports()
+        self.port_combobox.popupAboutToBeShown.connect(self.on_port_combobox)
 
-        # Refresh Button
-        self.refresh_btn = QPushButton(self.tr('Refresh'))
-        self.refresh_btn.clicked.connect(self.on_refresh_btn_pressed)
+        # Reset Button
+        self.reset_btn = QPushButton(self.tr('Reset ESP32'))
+        self.reset_btn.clicked.connect(self.on_reset_btn_pressed)
 
         # Baudrate Combobox
         self.baud_label = QLabel(self.tr('Baud Rate:'))
@@ -151,10 +164,6 @@ class MainWidget(QWidget):
         self.upload_btn = QPushButton(self.tr('  Upload Firmware  '))
         self.upload_btn.setFont(myFont)
         self.upload_btn.clicked.connect(self.on_upload_btn_pressed)
-
-        # Reset Button
-        self.reset_btn = QPushButton(self.tr('Reset ESP32'))
-        self.reset_btn.clicked.connect(self.on_reset_btn_pressed)
 
         # Messages Bar
         self.messages_label = QLabel(self.tr('Status / Warnings:'))
@@ -179,16 +188,14 @@ class MainWidget(QWidget):
 
         layout.addWidget(self.port_label, 2, 0)
         layout.addWidget(self.port_combobox, 2, 1)
-        layout.addWidget(self.refresh_btn, 2, 2)
+        layout.addWidget(self.reset_btn, 2, 2)
 
         layout.addWidget(self.baud_label, 3, 0)
         layout.addWidget(self.baud_combobox, 3, 1)
         layout.addWidget(self.upload_btn, 3, 2)
 
-        layout.addWidget(self.reset_btn, 4, 2)
-
-        layout.addWidget(self.messages_label, 5, 0)
-        layout.addWidget(self.messageBox, 6, 0, 6, 3)
+        layout.addWidget(self.messages_label, 4, 0)
+        layout.addWidget(self.messageBox, 5, 0, 5, 3)
 
         self.setLayout(layout)
 
@@ -278,15 +285,29 @@ class MainWidget(QWidget):
 
         # If the flash detection is finished, trigger the upload
         if action_type == AUxEsptoolDetectFlash.ACTION_ID:
+            self.writeMessage("Flash detection complete. Uploading firmware...")
             self.do_upload()
 
         # If the upload is finished, trigger a reset
         elif action_type == AUxEsptoolUploadFirmware.ACTION_ID:
+            self.writeMessage("Firmware upload complete. Resetting ESP32...")
             self.on_reset_btn_pressed()
 
         # re-enable the UX
         else:
+            self.writeMessage("Reset complete...")
             self.disable_interface(False)
+
+    # --------------------------------------------------------------
+    # on_port_combobox()
+    #
+    # Called when the combobox pop-up menu is about to be shown
+    #
+    # Use this event to dynamically update the displayed ports
+    #
+    @pyqtSlot()
+    def on_port_combobox(self):
+        self.update_com_ports()
 
     def _load_settings(self) -> None:
         """Load settings on startup."""
@@ -385,10 +406,6 @@ class MainWidget(QWidget):
         self._worker.shutdown()
 
         event.accept()
-
-    def on_refresh_btn_pressed(self) -> None:
-        self.update_com_ports()
-        self.writeMessage("Ports Refreshed\n")
 
     def on_browse_btn_pressed(self) -> None:
         """Open dialog to select bin file."""
