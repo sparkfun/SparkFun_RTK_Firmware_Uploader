@@ -45,6 +45,11 @@ Installation binaries are available for all major platforms (macOS, Window, and 
 
 [**RTK Uploader Release Page**](https://github.com/sparkfun/SparkFun_RTK_Firmware_Uploader/releases)
 
+Click the arrow next to **Assets** if required to see the installers:
+
+![Releases Assets](images/RTK_Uploader_Assets.png)
+
+
 ### Windows
 * Download the github release zip file - *RTKUploader.win.zip.zip*
 * Unzip the release file - *RTKUploader.zip*
