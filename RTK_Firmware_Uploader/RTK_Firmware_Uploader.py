@@ -18,6 +18,10 @@ import os
 import os.path
 import platform
 
+import serial
+
+from time import sleep
+
 from typing import Iterator, Tuple
 
 from PyQt5.QtCore import QSettings, QProcess, QTimer, Qt, QIODevice, pyqtSignal, pyqtSlot, QObject
@@ -25,7 +29,7 @@ from PyQt5.QtWidgets import QWidget, QLabel, QComboBox, QGridLayout, \
     QPushButton, QApplication, QLineEdit, QFileDialog, QPlainTextEdit, \
     QAction, QActionGroup, QMenu, QMenuBar, QMainWindow, QMessageBox
 from PyQt5.QtGui import QCloseEvent, QTextCursor, QIcon, QFont
-from PyQt5.QtSerialPort import QSerialPortInfo
+from PyQt5.QtSerialPort import QSerialPort, QSerialPortInfo
 
 _APP_NAME = "RTK Firmware Uploader"
 
@@ -458,22 +462,87 @@ class MainWidget(QWidget):
 
         self.writeMessage("Resetting ESP32\n")
 
-        command = []
-        command.extend(["--chip","esp32"])
-        command.extend(["--port",self.port])
-        #command.extend(["--baud",self.baudRate])
-        command.extend(["--before","default_reset","run"])
+        # ---- The esptool method -----
 
-        # Create a job and add it to the job queue. The worker thread will pick this up and
-        # process the job. Can set job values using dictionary syntax, or attribute assignments
-        #
-        # Note - the job is defined with the ID of the target action
-        theJob = AxJob(AUxEsptoolResetESP32.ACTION_ID, {"command":command})
+        # command = []
+        # command.extend(["--chip","esp32"])
+        # command.extend(["--port",self.port])
+        # #command.extend(["--baud",self.baudRate])
+        # command.extend(["--before","default_reset","run"])
 
-        # Send the job to the worker to process
-        self._worker.add_job(theJob)
+        # # Create a job and add it to the job queue. The worker thread will pick this up and
+        # # process the job. Can set job values using dictionary syntax, or attribute assignments
+        # #
+        # # Note - the job is defined with the ID of the target action
+        # theJob = AxJob(AUxEsptoolResetESP32.ACTION_ID, {"command":command})
+
+        # # Send the job to the worker to process
+        # self._worker.add_job(theJob)
+
+        # self.disable_interface(True)
+
+
+        # ---- The QSerialPort method -----
+
+        # self.disable_interface(True)
+
+        # try:
+        #     ser = QSerialPort()
+        #     ser.setPortName(self.port)
+        #     ser.setBaudRate(QSerialPort.Baud115200)
+        #     ser.open(QIODevice.ReadOnly)
+        # except:
+        #     self.writeMessage("Could not open serial port\n")
+        #     self.disable_interface(False)
+        #     return
+
+        # try:
+        #     sleep(0.1)
+        #     ser.setDataTerminalReady(False)
+        #     ser.setRequestToSend(True)
+        #     sleep(0.1)
+        #     ser.setDataTerminalReady(True)
+        #     sleep(0.5)
+        #     ser.setRequestToSend(False)
+        #     sleep(0.1)
+        #     ser.setDataTerminalReady(False)
+        #     ser.close()
+        # except:
+        #     self.writeMessage("Could not reset ESP32\n")
+        #     self.disable_interface(False)
+        #     return
+
+        # self.writeMessage("Reset complete...")
+        # self.disable_interface(False)
+
+
+        # ---- The pySerial method -----
 
         self.disable_interface(True)
+
+        sleep(0.1)
+
+        try:
+            ser = serial.Serial()
+            ser.port = self.port
+            ser.setDTR(False)
+            ser.setRTS(True)
+            sleep(0.1)
+            with ser as s:
+                s.setDTR(False)
+                s.setRTS(True)
+                sleep(0.1)
+                s.setDTR(True)
+                sleep(0.5)
+                s.setRTS(False)
+                s.setDTR(False)
+        except:
+            self.writeMessage("Could not open serial port\n")
+            self.disable_interface(False)
+            return
+
+        self.writeMessage("Reset complete...")
+        self.disable_interface(False)
 
     def on_upload_btn_pressed(self) -> None:
         """Get ready to upload the firmware. First, detect the flash size"""
@@ -579,7 +648,8 @@ class MainWidget(QWidget):
         command.extend(["--chip","esp32"])
         command.extend(["--port",self.port])
         command.extend(["--baud",self.baudRate])
-        command.extend(["--before","default_reset","--after","hard_reset","write_flash","-z","--flash_mode","dio","--flash_freq","80m","--flash_size","detect"])
+        #command.extend(["--before","default_reset","--after","hard_reset","write_flash","-z","--flash_mode","dio","--flash_freq","80m","--flash_size","detect"])
+        command.extend(["--before","default_reset","--after","no_reset","write_flash","-z","--flash_mode","dio","--flash_freq","80m","--flash_size","detect"])
         command.extend(["0x1000",resource_path("RTK_Surveyor.ino.bootloader.bin")])
         command.extend(["0x8000",thePartitionFileName])
         command.extend(["0xe000",resource_path("boot_app0.bin")])
