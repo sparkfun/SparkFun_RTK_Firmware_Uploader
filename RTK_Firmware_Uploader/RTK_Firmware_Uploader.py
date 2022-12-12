@@ -152,9 +152,9 @@ class MainWidget(QWidget):
         self.update_com_ports()
         self.port_combobox.popupAboutToBeShown.connect(self.on_port_combobox)
 
-        # Reset Button
-        self.reset_btn = QPushButton(self.tr('Reset ESP32'))
-        self.reset_btn.clicked.connect(self.on_reset_btn_pressed)
+        # # Reset Button
+        # self.reset_btn = QPushButton(self.tr('Reset ESP32'))
+        # self.reset_btn.clicked.connect(self.on_reset_btn_pressed)
 
         # Baudrate Combobox
         self.baud_label = QLabel(self.tr('Baud Rate:'))
@@ -192,7 +192,7 @@ class MainWidget(QWidget):
 
         layout.addWidget(self.port_label, 2, 0)
         layout.addWidget(self.port_combobox, 2, 1)
-        layout.addWidget(self.reset_btn, 2, 2)
+        # layout.addWidget(self.reset_btn, 2, 2)
 
         layout.addWidget(self.baud_label, 3, 0)
         layout.addWidget(self.baud_combobox, 3, 1)
@@ -294,12 +294,12 @@ class MainWidget(QWidget):
 
         # If the upload is finished, trigger a reset
         elif action_type == AUxEsptoolUploadFirmware.ACTION_ID:
-            self.writeMessage("Firmware upload complete. Resetting ESP32...")
-            self.on_reset_btn_pressed()
+            self.writeMessage("Firmware upload complete. Restarting ESP32...")
+            self.do_restart()
 
         # re-enable the UX
         else:
-            self.writeMessage("Reset complete...")
+            self.writeMessage("Restart complete... Please power-on the RTK device.")
             self.disable_interface(False)
 
     # --------------------------------------------------------------
@@ -443,106 +443,7 @@ class MainWidget(QWidget):
     def disable_interface(self, bDisable=False):
 
         self.upload_btn.setDisabled(bDisable)
-        self.reset_btn.setDisabled(bDisable)
-
-    def on_reset_btn_pressed(self) -> None:
-        """Reset the ESP32"""
-        portAvailable = False
-        for desc, name, sys in gen_serial_ports():
-            if (sys == self.port):
-                portAvailable = True
-        if (portAvailable == False):
-            self.writeMessage("Port No Longer Available")
-            return
-
-        try:
-            self._save_settings() # Save the settings in case the command fails
-        except:
-            pass
-
-        self.writeMessage("Resetting ESP32\n")
-
-        # ---- The esptool method -----
-
-        # command = []
-        # command.extend(["--chip","esp32"])
-        # command.extend(["--port",self.port])
-        # #command.extend(["--baud",self.baudRate])
-        # command.extend(["--before","default_reset","run"])
-
-        # # Create a job and add it to the job queue. The worker thread will pick this up and
-        # # process the job. Can set job values using dictionary syntax, or attribute assignments
-        # #
-        # # Note - the job is defined with the ID of the target action
-        # theJob = AxJob(AUxEsptoolResetESP32.ACTION_ID, {"command":command})
-
-        # # Send the job to the worker to process
-        # self._worker.add_job(theJob)
-
-        # self.disable_interface(True)
-
-
-        # ---- The QSerialPort method -----
-
-        # self.disable_interface(True)
-
-        # try:
-        #     ser = QSerialPort()
-        #     ser.setPortName(self.port)
-        #     ser.setBaudRate(QSerialPort.Baud115200)
-        #     ser.open(QIODevice.ReadOnly)
-        # except:
-        #     self.writeMessage("Could not open serial port\n")
-        #     self.disable_interface(False)
-        #     return
-
-        # try:
-        #     sleep(0.1)
-        #     ser.setDataTerminalReady(False)
-        #     ser.setRequestToSend(True)
-        #     sleep(0.1)
-        #     ser.setDataTerminalReady(True)
-        #     sleep(0.5)
-        #     ser.setRequestToSend(False)
-        #     sleep(0.1)
-        #     ser.setDataTerminalReady(False)
-        #     ser.close()
-        # except:
-        #     self.writeMessage("Could not reset ESP32\n")
-        #     self.disable_interface(False)
-        #     return
-
-        # self.writeMessage("Reset complete...")
-        # self.disable_interface(False)
-
-
-        # ---- The pySerial method -----
-
-        self.disable_interface(True)
-
-        sleep(0.1)
-
-        try:
-            ser = serial.Serial()
-            ser.port = self.port
-            ser.setDTR(False)
-            ser.setRTS(True)
-            sleep(0.1)
-            with ser as s:
-                s.setDTR(False)
-                s.setRTS(True)
-                sleep(0.1)
-                s.setDTR(True)
-                sleep(0.5)
-                s.setRTS(False)
-                s.setDTR(False)
-        except:
-            self.writeMessage("Could not open serial port\n")
-            self.disable_interface(False)
-            return
-
-        self.writeMessage("Reset complete...")
-        self.disable_interface(False)
+        # self.reset_btn.setDisabled(bDisable)
 
     def on_upload_btn_pressed(self) -> None:
         """Get ready to upload the firmware. First, detect the flash size"""
@@ -648,8 +549,7 @@ class MainWidget(QWidget):
         command.extend(["--chip","esp32"])
         command.extend(["--port",self.port])
         command.extend(["--baud",self.baudRate])
-        #command.extend(["--before","default_reset","--after","hard_reset","write_flash","-z","--flash_mode","dio","--flash_freq","80m","--flash_size","detect"])
-        command.extend(["--before","default_reset","--after","no_reset","write_flash","-z","--flash_mode","dio","--flash_freq","80m","--flash_size","detect"])
+        command.extend(["--before","default_reset","--after","hard_reset","write_flash","-z","--flash_mode","dio","--flash_freq","80m","--flash_size","detect"])
         command.extend(["0x1000",resource_path("RTK_Surveyor.ino.bootloader.bin")])
         command.extend(["0x8000",thePartitionFileName])
         command.extend(["0xe000",resource_path("boot_app0.bin")])
@@ -662,6 +562,41 @@ class MainWidget(QWidget):
         #
         # Note - the job is defined with the ID of the target action
         theJob = AxJob(AUxEsptoolUploadFirmware.ACTION_ID, {"command":command})
+
+        # Send the job to the worker to process
+        self._worker.add_job(theJob)
+
+        self.disable_interface(True)
+
+    def do_restart(self) -> None:
+        """Tell the ESP32 to restart"""
+        portAvailable = False
+        for desc, name, sys in gen_serial_ports():
+            if (sys == self.port):
+                portAvailable = True
+        if (portAvailable == False):
+            self.writeMessage("Port No Longer Available")
+            return
+
+        try:
+            self._save_settings() # Save the settings in case the command fails
+        except:
+            pass
+
+        self.writeMessage("Restarting ESP32\n")
+
+        # ---- The esptool method -----
+
+        command = []
+        command.extend(["--chip","esp32"])
+        command.extend(["--port",self.port])
+        command.extend(["--before","no_reset","run"])
+
+        # Create a job and add it to the job queue. The worker thread will pick this up and
+        # process the job. Can set job values using dictionary syntax, or attribute assignments
+        #
+        # Note - the job is defined with the ID of the target action
+        theJob = AxJob(AUxEsptoolResetESP32.ACTION_ID, {"command":command})
 
         # Send the job to the worker to process
         self._worker.add_job(theJob)
