@@ -468,6 +468,7 @@ class MainWidget(QWidget):
         command.extend(["--chip","esp32"])
         command.extend(["--port",self.port])
         command.extend(["--baud",self.baudRate])
+        command.extend(["--before","default_reset","--after","no_reset"])
         command.extend(["flash_id"])
 
         # Create a job and add it to the job queue. The worker thread will pick this up and
@@ -489,6 +490,7 @@ class MainWidget(QWidget):
                 portAvailable = True
         if (portAvailable == False):
             self.writeMessage("Port No Longer Available")
+            self.disable_interface(False)
             return
 
         fileExists = False
@@ -500,6 +502,7 @@ class MainWidget(QWidget):
         finally:
             if (fileExists == False):
                 self.writeMessage("File Not Found")
+                self.disable_interface(False)
                 return
             f.close()
 
@@ -540,8 +543,10 @@ class MainWidget(QWidget):
         if firmwareSizeCorrect == False:
             reply = QMessageBox.warning(self, "Firmware size mismatch", "Do you want to continue?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
             if reply == QMessageBox.No:
+                self.disable_interface(False)
                 return
 
+        sleep(1.0);
         self.writeMessage("Uploading firmware\n")
 
         command = []
@@ -549,7 +554,8 @@ class MainWidget(QWidget):
         command.extend(["--chip","esp32"])
         command.extend(["--port",self.port])
         command.extend(["--baud",self.baudRate])
-        command.extend(["--before","default_reset","--after","hard_reset","write_flash","-z","--flash_mode","dio","--flash_freq","80m","--flash_size","detect"])
+        #command.extend(["--before","default_reset","--after","hard_reset","write_flash","-z","--flash_mode","dio","--flash_freq","80m","--flash_size","detect"])
+        command.extend(["--before","default_reset","--after","no_reset","write_flash","-z","--flash_mode","dio","--flash_freq","80m","--flash_size","detect"])
         command.extend(["0x1000",resource_path("RTK_Surveyor.ino.bootloader.bin")])
         command.extend(["0x8000",thePartitionFileName])
         command.extend(["0xe000",resource_path("boot_app0.bin")])
@@ -566,7 +572,7 @@ class MainWidget(QWidget):
         # Send the job to the worker to process
         self._worker.add_job(theJob)
 
-        self.disable_interface(True)
+        self.disable_interface(True) # Redundant... Interface is still disabled from flash detect
 
     def do_restart(self) -> None:
         """Tell the ESP32 to restart"""
@@ -576,6 +582,7 @@ class MainWidget(QWidget):
                 portAvailable = True
         if (portAvailable == False):
             self.writeMessage("Port No Longer Available")
+            self.disable_interface(False)
             return
 
         try:
@@ -583,6 +590,7 @@ class MainWidget(QWidget):
         except:
             pass
 
+        sleep(1.0);
         self.writeMessage("Restarting ESP32\n")
 
         # ---- The esptool method -----
@@ -590,7 +598,7 @@ class MainWidget(QWidget):
         command = []
         command.extend(["--chip","esp32"])
         command.extend(["--port",self.port])
-        command.extend(["--before","no_reset","run"])
+        command.extend(["--before","default_reset","run"])
 
         # Create a job and add it to the job queue. The worker thread will pick this up and
         # process the job. Can set job values using dictionary syntax, or attribute assignments
@@ -601,7 +609,7 @@ class MainWidget(QWidget):
         # Send the job to the worker to process
         self._worker.add_job(theJob)
 
-        self.disable_interface(True)
+        self.disable_interface(True) # Redundant... Interface is still disabled from flash detect
 
 def startUploaderGUI():
     """Start the GUI"""
