@@ -295,7 +295,7 @@ class MainWidget(QWidget):
         # If the upload is finished, trigger a reset
         elif action_type == AUxEsptoolUploadFirmware.ACTION_ID:
             self.writeMessage("Firmware upload complete. Resetting ESP32...")
-            self.on_reset_btn_pressed()
+            self.esptool_reset()
 
         # re-enable the UX
         else:
@@ -573,7 +573,7 @@ class MainWidget(QWidget):
 
         self.disable_interface(True) # Redundant... Interface is still disabled from flash detect
 
-    def on_reset_btn_pressed(self) -> None:
+    def esptool_reset(self) -> None:
         """Tell the ESP32 to reset/restart"""
         portAvailable = False
         for desc, name, sys in gen_serial_ports():
