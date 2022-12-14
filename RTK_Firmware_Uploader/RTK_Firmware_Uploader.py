@@ -154,7 +154,7 @@ class MainWidget(QWidget):
 
         # Reset Button
         self.reset_btn = QPushButton(self.tr('Reset ESP32'))
-        self.reset_btn.clicked.connect(self.on_reset_btn_pressed)
+        self.reset_btn.clicked.connect(self.tera_term_reset)
 
         # Baudrate Combobox
         self.baud_label = QLabel(self.tr('Baud Rate:'))
@@ -609,6 +609,54 @@ class MainWidget(QWidget):
         self._worker.add_job(theJob)
 
         self.disable_interface(True)
+
+    def tera_term_reset(self) -> None:
+        """Reset the ESP32 the TeraTerm way"""
+        portAvailable = False
+        for desc, name, sys in gen_serial_ports():
+            if (sys == self.port):
+                portAvailable = True
+        if (portAvailable == False):
+            self.writeMessage("Port No Longer Available")
+            return
+
+        try:
+            self._save_settings() # Save the settings in case the command fails
+        except:
+            pass
+
+        self.writeMessage("Resetting ESP32\n")
+
+        # ---- The pySerial method -----
+
+        self.disable_interface(True)
+
+        sleep(0.1)
+
+        try:
+            ser = serial.Serial()
+            ser.port = self.port
+            ser.setDTR(False) # DTR High
+            ser.setRTS(False) # RTS High
+            with ser as s:
+                s.setRTS(True) # RTS Low - before DTR
+                s.setDTR(True) # DTR Low - after RTS
+                sleep(1.0)
+                self.writeMessage("Waiting for reset to complete")
+                sleep(1.0)
+                self.writeMessage("Waiting for reset to complete")
+                sleep(1.0)
+                self.writeMessage("Waiting for reset to complete")
+                sleep(1.0)
+                self.writeMessage("Waiting for reset to complete\n")
+                sleep(1.0)
+        except:
+            self.writeMessage("Could not open serial port\n")
+            self.disable_interface(False)
+            return
+
+        self.writeMessage("Reset complete...")
+        self.disable_interface(False)
 
 def startUploaderGUI():
     """Start the GUI"""
