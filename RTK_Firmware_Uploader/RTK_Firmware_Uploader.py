@@ -152,9 +152,9 @@ class MainWidget(QWidget):
         self.update_com_ports()
         self.port_combobox.popupAboutToBeShown.connect(self.on_port_combobox)
 
-        # # Reset Button
-        # self.reset_btn = QPushButton(self.tr('Reset ESP32'))
-        # self.reset_btn.clicked.connect(self.on_reset_btn_pressed)
+        # Reset Button
+        self.reset_btn = QPushButton(self.tr('Reset ESP32'))
+        self.reset_btn.clicked.connect(self.on_reset_btn_pressed)
 
         # Baudrate Combobox
         self.baud_label = QLabel(self.tr('Baud Rate:'))
@@ -192,7 +192,7 @@ class MainWidget(QWidget):
 
         layout.addWidget(self.port_label, 2, 0)
         layout.addWidget(self.port_combobox, 2, 1)
-        # layout.addWidget(self.reset_btn, 2, 2)
+        layout.addWidget(self.reset_btn, 2, 2)
 
         layout.addWidget(self.baud_label, 3, 0)
         layout.addWidget(self.baud_combobox, 3, 1)
@@ -294,12 +294,12 @@ class MainWidget(QWidget):
 
         # If the upload is finished, trigger a reset
         elif action_type == AUxEsptoolUploadFirmware.ACTION_ID:
-            self.writeMessage("Firmware upload complete. Restarting ESP32...")
-            self.do_restart()
+            self.writeMessage("Firmware upload complete. Resetting ESP32...")
+            self.on_reset_btn_pressed()
 
         # re-enable the UX
         else:
-            self.writeMessage("Restart complete... Please power-on the RTK device.")
+            self.writeMessage("Reset complete...")
             self.disable_interface(False)
 
     # --------------------------------------------------------------
@@ -443,7 +443,7 @@ class MainWidget(QWidget):
     def disable_interface(self, bDisable=False):
 
         self.upload_btn.setDisabled(bDisable)
-        # self.reset_btn.setDisabled(bDisable)
+        self.reset_btn.setDisabled(bDisable)
 
     def on_upload_btn_pressed(self) -> None:
         """Get ready to upload the firmware. First, detect the flash size"""
@@ -554,7 +554,6 @@ class MainWidget(QWidget):
         command.extend(["--chip","esp32"])
         command.extend(["--port",self.port])
         command.extend(["--baud",self.baudRate])
-        #command.extend(["--before","default_reset","--after","hard_reset","write_flash","-z","--flash_mode","dio","--flash_freq","80m","--flash_size","detect"])
         command.extend(["--before","default_reset","--after","no_reset","write_flash","-z","--flash_mode","dio","--flash_freq","80m","--flash_size","detect"])
         command.extend(["0x1000",resource_path("RTK_Surveyor.ino.bootloader.bin")])
         command.extend(["0x8000",thePartitionFileName])
@@ -574,8 +573,8 @@ class MainWidget(QWidget):
 
         self.disable_interface(True) # Redundant... Interface is still disabled from flash detect
 
-    def do_restart(self) -> None:
-        """Tell the ESP32 to restart"""
+    def on_reset_btn_pressed(self) -> None:
+        """Tell the ESP32 to reset/restart"""
         portAvailable = False
         for desc, name, sys in gen_serial_ports():
             if (sys == self.port):
@@ -591,7 +590,7 @@ class MainWidget(QWidget):
             pass
 
         sleep(1.0);
-        self.writeMessage("Restarting ESP32\n")
+        self.writeMessage("Resetting ESP32\n")
 
         # ---- The esptool method -----
 
@@ -609,7 +608,7 @@ class MainWidget(QWidget):
         # Send the job to the worker to process
         self._worker.add_job(theJob)
 
-        self.disable_interface(True) # Redundant... Interface is still disabled from flash detect
+        self.disable_interface(True)
 
 def startUploaderGUI():
     """Start the GUI"""

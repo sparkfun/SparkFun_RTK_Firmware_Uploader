@@ -48,7 +48,7 @@ class AUxEsptoolUploadFirmware(AxAction):
 class AUxEsptoolResetESP32(AxAction):
 
     ACTION_ID = "esptool-reset-esp32"
-    NAME = "ESP32 Restart"
+    NAME = "ESP32 Reset"
 
     def __init__(self) -> None:
         super().__init__(self.ACTION_ID, self.NAME)
