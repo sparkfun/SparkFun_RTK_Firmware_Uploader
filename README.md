@@ -51,14 +51,13 @@ Click the arrow next to **Assets** if required to see the installers:
 
 
 ### Windows
-* Download the github release zip file - *RTKUploader.win.zip.zip*
+* Download the [github release](https://github.com/sparkfun/SparkFun_RTK_Firmware_Uploader/releases) zip file - *RTKUploader.win.zip*
 * Unzip the release file - *RTKUploader.zip*
 * This results in the application executable, *RTKUploader.exe*
 * Double-click *RTKUploader.exe* to start the application
 
 ### macOS
-* Download the release file - *RTKUploader.dmg.zip*
-* Double click on the file to unzip the file to *RTKUploader.dmg*
+* Download the [github release](https://github.com/sparkfun/SparkFun_RTK_Firmware_Uploader/releases) file - *RTKUploader.dmg*
 * Double click the *RTKUploader.dmg* file to mount the disk image. 
 * A Finder window, with the contents of the file will open
 * Install the *RTKUploader.app* by dragging it on the *Applications* in the RTKUploader Finder Window, or copying the file to a desired location.
@@ -73,8 +72,7 @@ To launch the RTK Uploader application:
 * Once selected, macOS will present one last dialog. Select *Open* to run the application. The RTKUploader will now start.
 
 ### Linux
-* Download the github release zip file - *RTKUploader.linux.gz.zip*
-* Unzip the release file - *RTKUploader.linux.gz*
+* Download the [github release](https://github.com/sparkfun/SparkFun_RTK_Firmware_Uploader/releases) file - *RTKUploader.linux.gz*
 * Un-gzip the file, either by double-clicking in on the desktop, or using the `gunzip` command in a terminal window. This results in the file *RTKUploader* 
 * To run the application, the file must have *execute* permission. This is performed by selecting *Properties* from the file right-click menu, and then selecting permissions. You can also change permissions using the `chmod` command in a terminal window.
 * Once the application has execute permission, you can start the application a terminal window. Change directory's to the application location and issue `./RTKUploader`
