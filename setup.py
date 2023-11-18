@@ -33,7 +33,7 @@ here = path.abspath(path.dirname(__file__))
 with open(path.join(here, 'DESCRIPTION.md'), encoding='utf-8') as f:
     long_description = f.read()
     
-install_deps = ['darkdetect', 'pyserial']
+install_deps = ['darkdetect', 'pyserial', 'esptool']
 
 # Raspberry Pi needs python3-pyqt5 and python3-pyqt5.qtserialport
 # which can only be installed with apt-get

@@ -1,11 +1,6 @@
 from .au_action import AxAction, AxJob
-from .esptool import main as esptool_main
-from .esptool import ESPLoader
-from .esptool import UnsupportedCommandError
-from .esptool import NotSupportedError
-from .esptool import NotImplementedInROMError
-from .esptool import FatalError
 
+import esptool
 
 #--------------------------------------------------------------------------------------
 # action testing
@@ -20,7 +15,7 @@ class AUxEsptoolDetectFlash(AxAction):
     def run_job(self, job:AxJob):
 
         try:
-            esptool_main(job.command)
+            esptool._main(job.command)
 
         except Exception:
             return 1
@@ -38,7 +33,7 @@ class AUxEsptoolUploadFirmware(AxAction):
     def run_job(self, job:AxJob):
 
         try:
-            esptool_main(job.command)
+            esptool._main(job.command)
 
         except Exception:
             return 1
@@ -56,7 +51,7 @@ class AUxEsptoolResetESP32(AxAction):
     def run_job(self, job:AxJob):
 
         try:
-            esptool_main(job.command)
+            esptool._main(job.command)
 
         except Exception:
             return 1

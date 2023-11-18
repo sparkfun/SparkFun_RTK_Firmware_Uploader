@@ -33,7 +33,7 @@ jobs:
       # Setup python
       - name: System Setup
         run: |
-          pip3 install pyinstaller pyqt5 darkdetect pyserial
+          pip3 install pyinstaller pyqt5 darkdetect pyserial esptool
         
       # Build the installer
       - name: Build Windows Installer
