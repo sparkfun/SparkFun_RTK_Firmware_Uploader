@@ -33,7 +33,7 @@ jobs:
       # Setup python
       - name: System Setup
         run: |
-          pip3 install pyinstaller pyqt5 darkdetect serial esptool
+          pip install pyinstaller pyqt5 darkdetect esptool
 
       # Build the installer
       - name: Build Linux Installer

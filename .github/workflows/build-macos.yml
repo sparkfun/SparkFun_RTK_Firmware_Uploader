@@ -33,7 +33,7 @@ jobs:
       # Setup python
       - name: System Setup
         run: |
-          pip3 install serial pyinstaller Pillow pyqt5 darkdetect esptool
+          pip install pyinstaller Pillow pyqt5 darkdetect esptool
           brew install create-dmg
 
       # Build the installer
