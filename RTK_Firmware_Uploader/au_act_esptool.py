@@ -15,7 +15,7 @@ class AUxEsptoolDetectFlash(AxAction):
     def run_job(self, job:AxJob):
 
         try:
-            esptool._main(job.command)
+            esptool.main(job.command)
 
         except Exception:
             return 1
@@ -33,7 +33,7 @@ class AUxEsptoolUploadFirmware(AxAction):
     def run_job(self, job:AxJob):
 
         try:
-            esptool._main(job.command)
+            esptool.main(job.command)
 
         except Exception:
             return 1
@@ -51,7 +51,7 @@ class AUxEsptoolResetESP32(AxAction):
     def run_job(self, job:AxJob):
 
         try:
-            esptool._main(job.command)
+            esptool.main(job.command)
 
         except Exception:
             return 1
