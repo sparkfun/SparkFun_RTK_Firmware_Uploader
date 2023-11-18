@@ -7,6 +7,9 @@ The RTK Firmware Uploader is a simple, easy to use method for updating the firmw
 
 If you need to install the application, see the [Installation Section](#installation) of this page.
 
+## Notes:
+
+From v1.6.0, this GUI does not contain a copy of ```esptool.py```. Instead the latest ```esptool.py``` is installed and used by the build workflow. If you want to run ```RTK_Firmware_Uploader.py``` locally, you will need to ```pip install esptool``` first.
 
 # Using the RTK Firmware Uploader
   
