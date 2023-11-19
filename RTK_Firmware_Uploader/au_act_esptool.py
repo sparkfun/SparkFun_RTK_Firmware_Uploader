@@ -1,6 +1,6 @@
 from .au_action import AxAction, AxJob
 
-import esptool
+import esptool # pip install esptool
 
 #--------------------------------------------------------------------------------------
 # action testing
