@@ -466,10 +466,9 @@ class MainWidget(QWidget):
 
         command = []
         command.extend(["--chip","esp32"])
-        #command.extend(["--port",self.port])
-        #command.extend(["--baud",self.baudRate])
+        command.extend(["--port",self.port])
+        command.extend(["--baud",self.baudRate])
         command.extend(["--before","default_reset","--after","no_reset"])
-        command.extend(["--trace","--connect-attempts","3"])
         command.extend(["flash_id"])
 
         # Create a job and add it to the job queue. The worker thread will pick this up and
