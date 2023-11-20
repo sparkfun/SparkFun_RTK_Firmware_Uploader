@@ -33,7 +33,7 @@ jobs:
       # Setup python
       - name: System Setup
         run: |
-          pip install pyinstaller pyqt5 darkdetect argparse==1.1 intelhex esptool
+          pip install pyinstaller pyqt5 darkdetect argparse==1.1 intelhex esptool==4.5.1
         
       # Build the installer
       - name: Build Windows Installer
