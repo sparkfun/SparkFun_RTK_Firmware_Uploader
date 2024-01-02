@@ -12,10 +12,6 @@ on:
         value: ${{ jobs.windows-build-job.outputs.install-file }}
 
   workflow_dispatch:
-    outputs:
-      build-file:
-        description: "The output of this build procsss"
-        value: ${{ jobs.windows-build-job.outputs.install-file }}
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
