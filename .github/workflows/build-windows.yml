@@ -24,6 +24,7 @@ jobs:
       
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
@@ -35,7 +36,7 @@ jobs:
           pip install pyinstaller pyqt5 darkdetect argparse intelhex esptool
 
       # Find the esptool/targets/stub_flasher json files
-      -name: Find stub flasher json files
+      - name: Find stub flasher json files
         run: |
           echo "ESPTOOL_TARGETS=$(pip show $esptool)\targets\stub_flasher" >> $GITHUB_ENV
           echo ${{ env.ESPTOOL_TARGETS }}
