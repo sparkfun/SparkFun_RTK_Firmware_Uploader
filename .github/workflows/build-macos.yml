@@ -39,7 +39,9 @@ jobs:
       # Build the installer
       - name: Build Mac Installer
         run: |
-          pyinstaller --windowed -n RTKUploader --noconsole --distpath=. --icon=RTK_Firmware_Uploader/resource/RTK.ico --add-binary="RTK_Firmware_Uploader/resource/RTK_Surveyor_Partitions_4MB.bin:." --add-binary="RTK_Firmware_Uploader/resource/RTK_Surveyor_Partitions_16MB.bin:." --add-binary="RTK_Firmware_Uploader/resource/RTK_Surveyor.ino.bootloader.bin:." --add-binary="RTK_Firmware_Uploader/resource/boot_app0.bin:." --add-binary="RTK_Firmware_Uploader/resource/RTK.png:." --add-data="RTK_Firmware_Uploader/resource/*:resource/" RTK_Firmware_Upload.py
+          ESPTOOL_LOCATION=$(pip show esptool | grep "Location: " | cut -c 11- | tr -d '\n')
+          ESPTOOL_TARGETS=echo "${ESPTOOL_LOCATION}/esptool/targets/stub_flasher/*:esptool/targets/stub_flasher/"
+          pyinstaller --windowed -n RTKUploader --noconsole --distpath=. --icon=RTK_Firmware_Uploader/resource/RTK.ico --add-binary="RTK_Firmware_Uploader/resource/RTK_Surveyor_Partitions_4MB.bin:." --add-binary="RTK_Firmware_Uploader/resource/RTK_Surveyor_Partitions_16MB.bin:." --add-binary="RTK_Firmware_Uploader/resource/RTK_Surveyor.ino.bootloader.bin:." --add-binary="RTK_Firmware_Uploader/resource/boot_app0.bin:." --add-binary="RTK_Firmware_Uploader/resource/RTK.png:." --add-data="RTK_Firmware_Uploader/resource/*:resource/" --add-data="${ESPTOOL_TARGETS}" RTK_Firmware_Upload.py
           mkdir tmp
           mv "RTKUploader.app" "tmp/"
           create-dmg --volicon "RTK_Firmware_Uploader/resource/sparkdisk.icns" --background "RTK_Firmware_Uploader/resource/sfe_logo_med.png" --hide-extension "RTKUploader.app" --icon "RTKUploader.app" 100 100 --window-size 600 440 --app-drop-link 400 100 "RTKUploader.dmg" "tmp/"
