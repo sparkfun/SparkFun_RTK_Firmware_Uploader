@@ -11,6 +11,12 @@ on:
         description: "The output of this build procsss"
         value: ${{ jobs.windows-build-job.outputs.install-file }}
 
+  workflow_dispatch:
+    outputs:
+      build-file:
+        description: "The output of this build procsss"
+        value: ${{ jobs.windows-build-job.outputs.install-file }}
+
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # Build the installer on mac
@@ -39,7 +45,7 @@ jobs:
       - name: Find stub flasher json files
         run: |
           echo "ESPTOOL_TARGETS=$(pip show $esptool)\targets\stub_flasher" >> $GITHUB_ENV
-          echo ${{ env.ESPTOOL_TARGETS }}
+          echo "${{ env.ESPTOOL_TARGETS }}"
         
       # Build the installer
       - name: Build Windows Installer
