@@ -38,7 +38,7 @@ jobs:
       # Find the esptool/targets/stub_flasher json files
       - name: Find stub flasher json files
         run: |
-          echo "ESPTOOL_TARGETS=$(pip show $esptool)\targets\stub_flasher" >> $GITHUB_ENV
+          echo "ESPTOOL_TARGETS=$(pip show esptool)\targets\stub_flasher" >> $GITHUB_ENV
           echo "${{ env.ESPTOOL_TARGETS }}"
         
       # Build the installer
