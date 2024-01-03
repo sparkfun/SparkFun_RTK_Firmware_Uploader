@@ -554,7 +554,7 @@ class MainWidget(QWidget):
         command.extend(["--chip","esp32"])
         command.extend(["--port",self.port])
         command.extend(["--baud",self.baudRate])
-        command.extend(["--before","default_reset","--after","no_reset","write_flash","-z","--flash_mode","dio","--flash_freq","80m","--flash_size","keep"])
+        command.extend(["--before","default_reset","--after","no_reset","write_flash","-z","--flash_mode","dio","--flash_freq","80m","--flash_size","detect"])
         command.extend(["0x1000",resource_path("RTK_Surveyor.ino.bootloader.bin")])
         command.extend(["0x8000",thePartitionFileName])
         command.extend(["0xe000",resource_path("boot_app0.bin")])
