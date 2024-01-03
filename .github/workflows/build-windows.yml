@@ -43,7 +43,7 @@ jobs:
           $ESPTOOL_TARGETS = $ESPTOOL_TARGETS.Substring(10)
           $ESPTOOL_TARGETS = echo "${ESPTOOL_TARGETS}\esptool\targets\stub_flasher\*;esptool\targets\stub_flasher\"
           echo "${ESPTOOL_TARGETS}"
-          pyinstaller --onefile --clean --name RTKUploader --noconsole --distpath=. --icon=RTK_Firmware_Uploader\resource\RTK.ico --add-binary="RTK_Firmware_Uploader\resource\RTK_Surveyor_Partitions_4MB.bin;." --add-binary="RTK_Firmware_Uploader\resource\RTK_Surveyor_Partitions_16MB.bin;." --add-binary="RTK_Firmware_Uploader\resource\RTK_Surveyor.ino.bootloader.bin;." --add-binary="RTK_Firmware_Uploader\resource\boot_app0.bin;." --add-binary="RTK_Firmware_Uploader\resource\RTK.png;." --add-data="RTK_Firmware_Uploader\resource\*;resource\" --add-data="${ESPTOOL_TARGETS}" RTK_Firmware_Upload.py
+          pyinstaller --onefile --clean --name RTKUploader --noconsole --distpath=. --icon=RTK_Firmware_Uploader\resource\RTK.ico --add-data="RTK_Firmware_Uploader\resource\*;resource\" --add-data="${ESPTOOL_TARGETS}" RTK_Firmware_Upload.py
                     
       - name: Compress Installer
         shell: powershell
