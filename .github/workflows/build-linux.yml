@@ -39,7 +39,7 @@ jobs:
       - name: Build Linux Installer
         run: |
           ESPTOOL_LOCATION=$(pip show esptool | grep "Location: " | cut -c 11- | tr -d '\n')
-          ESPTOOL_TARGETS=$(echo "${ESPTOOL_LOCATION}/esptool/targets/stub_flasher/*:esptool/targets/stub_flasher/")
+          ESPTOOL_TARGETS=$(echo "${ESPTOOL_LOCATION}/esptool/targets/stub_flasher/*.json:./esptool/targets/stub_flasher/")
           pyinstaller --onefile --clean --name RTKUploader --noconsole --distpath=. --icon=RTK_Firmware_Uploader/resource/RTK.ico --add-data="RTK_Firmware_Uploader/resource/*:resource/" --add-data="${ESPTOOL_TARGETS}" RTK_Firmware_Upload.py
           gzip RTKUploader
           mv RTKUploader.gz RTKUploader.linux.gz

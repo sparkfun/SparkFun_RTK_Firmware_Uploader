@@ -40,7 +40,7 @@ jobs:
       - name: Build Mac Installer
         run: |
           ESPTOOL_LOCATION=$(pip show esptool | grep "Location: " | cut -c 11- | tr -d '\n')
-          ESPTOOL_TARGETS=$(echo "${ESPTOOL_LOCATION}/esptool/targets/stub_flasher/*:../MacOS/esptool/targets/stub_flasher/")
+          ESPTOOL_TARGETS=$(echo "${ESPTOOL_LOCATION}/esptool/targets/stub_flasher/*.json:./esptool/targets/stub_flasher/")
           pyinstaller --windowed -n RTKUploader --noconsole --distpath=. --icon=RTK_Firmware_Uploader/resource/RTK.ico --add-data="RTK_Firmware_Uploader/resource/*:resource/" --add-data="${ESPTOOL_TARGETS}" RTK_Firmware_Upload.py
           mkdir tmp
           mv "RTKUploader.app" "tmp/"
