@@ -460,12 +460,6 @@ class MainWidget(QWidget):
         except:
             pass
 
-
-        head_tail = os.path.split(os.path.dirname(__file__))
-        base_path = os.path.abspath(head_tail[0])
-        self.writeMessage(base_path)
-        self.writeMessage(head_tail[1])
-
         self.flashSize = 0
 
         self.writeMessage("Detecting flash size\n\n")
