@@ -3,15 +3,14 @@ from .au_action import AxAction, AxJob
 import esptool # pip install esptool
 
 from platform import system
-import os
-import sys
+import os.path
 
-if (system() == "Darwin") and hasattr(sys, '_MEIPASS'): # Fix for MacOS pyinstaller windowed executable
+if (system() == "Darwin"): # Fix for MacOS pyinstaller windowed executable
 
     # Python hackiness: change the path to stub json files in the context of the esptool
     # module, so it edits the esptool's global variables
-    base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
-    STUBS_DIR = os.path.join(base_path, "..", "Resources", "esptool", "targets", "stub_flasher")
+    base_path = os.path.abspath(path.dirname(__file__))
+    STUBS_DIR = os.path.join(base_path, "..", "Frameworks", "esptool", "targets", "stub_flasher")
     exec(
         "loader.STUBS_DIR = '{}'".format(STUBS_DIR),
         esptool.__dict__,
