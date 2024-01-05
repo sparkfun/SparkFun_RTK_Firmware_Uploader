@@ -7,15 +7,17 @@ import os.path
 
 if (system() == "Darwin"): # Fix for MacOS pyinstaller windowed executable
 
-    # Python hackiness: change the path to stub json files in the context of the esptool
-    # module, so it edits the esptool's global variables
-    base_path = os.path.abspath(os.path.dirname(__file__))
-    STUBS_DIR = os.path.join(base_path, "..", "Frameworks", "esptool", "targets", "stub_flasher")
-    exec(
-        "loader.STUBS_DIR = '{}'".format(STUBS_DIR),
-        esptool.__dict__,
-        esptool.__dict__,
-    )
+    head_tail = os.path.split(os.path.dirname(__file__))
+    if (head_tail[1] == "RTK_Firmware_Uploader"): # Check if this is the Uploader executable
+        base_path = os.path.abspath(head_tail[0])
+        STUBS_DIR = os.path.join(base_path, "esptool", "targets", "stub_flasher")
+        # Python hackiness: change the path to stub json files in the context of the esptool
+        # module, so it edits the esptool's global variables
+        exec(
+            "loader.STUBS_DIR = '{}'".format(STUBS_DIR),
+            esptool.__dict__,
+            esptool.__dict__,
+        )
 
 #--------------------------------------------------------------------------------------
 # action testing

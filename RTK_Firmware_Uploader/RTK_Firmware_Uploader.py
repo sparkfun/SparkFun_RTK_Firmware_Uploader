@@ -461,8 +461,10 @@ class MainWidget(QWidget):
             pass
 
 
-        base_path = os.path.abspath(os.path.dirname(__file__))
+        head_tail = os.path.split(os.path.dirname(__file__))
+        base_path = os.path.abspath(head_tail[0])
         self.writeMessage(base_path)
+        self.writeMessage(head_tail[1])
 
         self.flashSize = 0
 
