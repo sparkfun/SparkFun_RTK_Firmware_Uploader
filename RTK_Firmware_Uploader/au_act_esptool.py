@@ -9,7 +9,7 @@ if (system() == "Darwin"): # Fix for MacOS pyinstaller windowed executable
 
     # Python hackiness: change the path to stub json files in the context of the esptool
     # module, so it edits the esptool's global variables
-    base_path = os.path.abspath(path.dirname(__file__))
+    base_path = os.path.abspath(os.path.dirname(__file__))
     STUBS_DIR = os.path.join(base_path, "..", "Frameworks", "esptool", "targets", "stub_flasher")
     exec(
         "loader.STUBS_DIR = '{}'".format(STUBS_DIR),
