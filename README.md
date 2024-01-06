@@ -9,7 +9,7 @@ If you need to install the application, see the [Installation Section](#installa
 
 ## Notes:
 
-From v1.6.0, this GUI does not contain a copy of ```esptool.py```. Instead the latest ```esptool.py``` is installed and used by the build workflow. If you want to run ```RTK_Firmware_Uploader.py``` locally, you will need to ```pip install esptool``` first. v1.6.0 of the GUI was written for and tested with v4.7.0 of esptool.
+From v1.6.0, this GUI does not contain a copy of ```esptool.py```. Instead the latest ```esptool.py``` is installed and used by the build workflow. If you want to run ```RTK_Firmware_Upload.py``` locally, you will need to ```pip install esptool``` first. v1.6.0 of the GUI was written for and tested with v4.7.0 of esptool.
 
 # Using the RTK Firmware Uploader
   
@@ -57,6 +57,8 @@ Click the arrow next to **Assets** if required to see the installers:
 * Unzip the release file - *RTKUploader.zip*
 * This results in the application executable, *RTKUploader.exe*
 * Double-click *RTKUploader.exe* to start the application
+* The executable isn't signed, so you will see a *Windows protected your PC* warning
+* Click *More info* and *Run anyway* to run the executable
 
 ### macOS
 * Download the [github release](https://github.com/sparkfun/SparkFun_RTK_Firmware_Uploader/releases) file - *RTKUploader.dmg*
