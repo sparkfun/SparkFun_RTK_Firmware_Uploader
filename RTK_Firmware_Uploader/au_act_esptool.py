@@ -2,13 +2,15 @@ from .au_action import AxAction, AxJob
 
 import esptool # pip install esptool
 
-from platform import system
-import os.path
-
-import sys
-
+# # When I couldn't get the windowed executable to work on MacOS, I suspected that esptool still could not
+# # find the stub_flasher json files. Turns out it was actually the baud rate that was the issue...
+# # 921600 fails on my Mac Mini, but 460800 works fine...
+# # I'm leaving the following commented code for future reference. I really like the exec trick!
+# 
+# from platform import system
+# import os.path
+# import sys
 # if (system() == "Darwin") and hasattr(sys, '_MEIPASS'): # Fix for MacOS pyinstaller windowed executable
-
 #     head_tail = os.path.split(os.path.dirname(__file__))
 #     base_path = os.path.abspath(head_tail[0])
 #     STUBS_DIR = os.path.join(base_path, "esptool", "targets", "stub_flasher")

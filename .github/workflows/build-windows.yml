@@ -42,7 +42,6 @@ jobs:
           $ESPTOOL_TARGETS = echo "$(pip show esptool | findstr "Location: ")"
           $ESPTOOL_TARGETS = $ESPTOOL_TARGETS.Substring(10)
           $ESPTOOL_TARGETS = echo "${ESPTOOL_TARGETS}\esptool\targets\stub_flasher\*.json;.\esptool\targets\stub_flasher\"
-          echo "${ESPTOOL_TARGETS}"
           pyinstaller --onefile --clean --name RTKUploader --noconsole --distpath=. --icon=RTK_Firmware_Uploader\resource\RTK.ico --add-data="RTK_Firmware_Uploader\resource\*;resource\" --add-data="${ESPTOOL_TARGETS}" RTK_Firmware_Upload.py
                     
       - name: Compress Installer
