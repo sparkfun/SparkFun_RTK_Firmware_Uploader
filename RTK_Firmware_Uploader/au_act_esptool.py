@@ -5,18 +5,29 @@ import esptool # pip install esptool
 from platform import system
 import os.path
 
+import sys
+
 if (system() == "Darwin"): # Fix for MacOS pyinstaller windowed executable
+
+    if hasattr(sys, '_MEIPASS'):
+        print ("Has _MEIPASS")
 
     head_tail = os.path.split(os.path.dirname(__file__))
     base_path = os.path.abspath(head_tail[0])
     STUBS_DIR = os.path.join(base_path, "esptool", "targets", "stub_flasher")
+    print (STUBS_DIR)
+    print (head_tail[1])
     # Python hackiness: change the path to stub json files in the context of the esptool
     # module, so it edits the esptool's global variables
-    exec(
-        "loader.STUBS_DIR = '{}'".format(STUBS_DIR),
-        esptool.__dict__,
-        esptool.__dict__,
-    )
+    try:
+        exec(
+            "esptool.loader.STUBS_DIR = '{}'".format(STUBS_DIR),
+            esptool.__dict__,
+            esptool.__dict__,
+        )
+    except:
+        print ("The exec failed...")
+        pass
 
 #--------------------------------------------------------------------------------------
 # action testing
