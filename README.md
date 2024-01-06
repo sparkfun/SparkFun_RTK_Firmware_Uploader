@@ -24,7 +24,6 @@ From v1.6.0, this GUI does not contain a copy of ```esptool.py```. Instead the l
 * Click ```Browse``` and select the firmware file you'd like to upload (the filename should end in *.bin*)
   * You can find the firmware in the [SparkFun_RTK_Firmware_Binaries repo on GitHub](https://github.com/sparkfun/SparkFun_RTK_Firmware_Binaries)
   * The older versions of the firmware are in a [separate folder](https://github.com/sparkfun/SparkFun_RTK_Firmware_Binaries/tree/main/PreviousVersions)
-  * If you have one of the earliest RTK Surveyors with 4MB flash, please select **v1_12**
 
 ![Select Firmware](images/RTK_Uploader_Windows_4.png)
 
@@ -87,11 +86,11 @@ The RTK Firmware Uploader is also provided as an installable Python package. Thi
 
 To install the Python package:
 * Download the package file - *python-install-package.zip*
-* Unzip the github release file. This results in the installable Python package file - *RTK_Firmware_Uploader-1.4.0.tar.gz* (note - the version number might vary)
+* Unzip the github release file. This results in the installable Python package file - *RTK_Firmware_Uploader-1.6.0.tar.gz* (note - the version number might vary)
 
 At a command line - issue the package install command:
 
-* `pip install RTK_Firmware_Uploader-1.4.0.tar.gz`
+* `pip install RTK_Firmware_Uploader-1.6.0.tar.gz`
 * Once installed, you can start the RTK Uploader App by issuing the command `./RTK_Formware_Upload` at the command line. (To see the command, you might need to start a new terminal, or issue a command like `rehash` depending on your platform/shell)
 
 Notes:
@@ -103,9 +102,9 @@ Notes:
 We've tested the Uploader on both 32-bit and 64-bit Raspberry Pi Debian. You will need to use the **Python Package** to install it.
 
 Notes:
-* On 32-bit Raspberry Pi, with both Python 2 and Python 3 installed, use `sudo pip3 install RTK_Firmware_Uploader-1.4.0.tar.gz`
+* On 32-bit Raspberry Pi, with both Python 2 and Python 3 installed, use `sudo pip3 install RTK_Firmware_Uploader-1.6.0.tar.gz`
   * By default, the executable will be placed in `/usr/local/bin`
-* On 64-bit Raspberry Pi, use `sudo pip install RTK_Firmware_Uploader-1.4.0.tar.gz`
+* On 64-bit Raspberry Pi, use `sudo pip install RTK_Firmware_Uploader-1.6.0.tar.gz`
 * The `sudo` is required to let `setup.py` install `python3-pyqt5` and `python3-pyqt5.qtserialport` using `sudo apt-get install`
 
 ![Raspberry Pi 64-bit : Install](images/RPi_install.png)
