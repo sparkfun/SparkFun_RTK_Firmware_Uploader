@@ -23,8 +23,9 @@ if (system() == "Darwin") and hasattr(sys, '_MEIPASS'): # Fix for MacOS pyinstal
             esptool.__dict__,
         ))
     except:
-        print ("The exec failed:", result)
+        print ("The exec failed")
         pass
+    print (result)
 
 #--------------------------------------------------------------------------------------
 # action testing
