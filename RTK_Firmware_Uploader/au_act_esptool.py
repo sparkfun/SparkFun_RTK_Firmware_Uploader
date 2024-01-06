@@ -1,11 +1,26 @@
 from .au_action import AxAction, AxJob
-from .esptool import main as esptool_main
-from .esptool import ESPLoader
-from .esptool import UnsupportedCommandError
-from .esptool import NotSupportedError
-from .esptool import NotImplementedInROMError
-from .esptool import FatalError
 
+import esptool # pip install esptool
+
+# # When I couldn't get the windowed executable to work on MacOS, I suspected that esptool still could not
+# # find the stub_flasher json files. Turns out it was actually the baud rate that was the issue...
+# # 921600 fails on my Mac Mini, but 460800 works fine...
+# # I'm leaving the following commented code for future reference. I really like the exec trick!
+# 
+# from platform import system
+# import os.path
+# import sys
+# if (system() == "Darwin") and hasattr(sys, '_MEIPASS'): # Fix for MacOS pyinstaller windowed executable
+#     head_tail = os.path.split(os.path.dirname(__file__))
+#     base_path = os.path.abspath(head_tail[0])
+#     STUBS_DIR = os.path.join(base_path, "esptool", "targets", "stub_flasher")
+#     # Python hackiness: change the path to stub json files in the context of the esptool
+#     # module, so it edits the esptool's global variables
+#     exec(
+#         "loader.STUBS_DIR = '{}'".format(STUBS_DIR),
+#         esptool.__dict__,
+#         esptool.__dict__,
+#         )
 
 #--------------------------------------------------------------------------------------
 # action testing
@@ -20,7 +35,7 @@ class AUxEsptoolDetectFlash(AxAction):
     def run_job(self, job:AxJob):
 
         try:
-            esptool_main(job.command)
+            esptool.main(job.command)
 
         except Exception:
             return 1
@@ -38,7 +53,7 @@ class AUxEsptoolUploadFirmware(AxAction):
     def run_job(self, job:AxJob):
 
         try:
-            esptool_main(job.command)
+            esptool.main(job.command)
 
         except Exception:
             return 1
@@ -56,7 +71,7 @@ class AUxEsptoolResetESP32(AxAction):
     def run_job(self, job:AxJob):
 
         try:
-            esptool_main(job.command)
+            esptool.main(job.command)
 
         except Exception:
             return 1

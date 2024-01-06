@@ -33,12 +33,16 @@ jobs:
       # Setup python
       - name: System Setup
         run: |
-          pip3 install pyinstaller pyqt5 darkdetect pyserial
-        
+          pip install pyinstaller pyqt5 darkdetect argparse intelhex esptool
+
       # Build the installer
       - name: Build Windows Installer
+        shell: powershell
         run: |
-          pyinstaller --onefile --clean --name RTKUploader --noconsole --distpath=. --icon=RTK_Firmware_Uploader\resource\RTK.ico --add-binary="RTK_Firmware_Uploader\resource\RTK_Surveyor_Partitions_4MB.bin;." --add-binary="RTK_Firmware_Uploader\resource\RTK_Surveyor_Partitions_16MB.bin;." --add-binary="RTK_Firmware_Uploader\resource\RTK_Surveyor.ino.bootloader.bin;." --add-binary="RTK_Firmware_Uploader\resource\boot_app0.bin;." --add-binary="RTK_Firmware_Uploader\resource\RTK.png;." --add-data="RTK_Firmware_Uploader\resource\*;resource\" RTK_Firmware_Upload.py
+          $ESPTOOL_TARGETS = echo "$(pip show esptool | findstr "Location: ")"
+          $ESPTOOL_TARGETS = $ESPTOOL_TARGETS.Substring(10)
+          $ESPTOOL_TARGETS = echo "${ESPTOOL_TARGETS}\esptool\targets\stub_flasher\*.json;.\esptool\targets\stub_flasher\"
+          pyinstaller --onefile --clean --name RTKUploader --noconsole --distpath=. --icon=RTK_Firmware_Uploader\resource\RTK.ico --add-data="RTK_Firmware_Uploader\resource\*;resource\" --add-data="${ESPTOOL_TARGETS}" RTK_Firmware_Upload.py
                     
       - name: Compress Installer
         shell: powershell

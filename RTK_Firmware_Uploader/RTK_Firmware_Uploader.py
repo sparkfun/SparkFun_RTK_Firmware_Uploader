@@ -375,7 +375,8 @@ class MainWidget(QWidget):
         # Highest speed first so code defaults to that
         # if settings.value(SETTING_BAUD_RATE) is None
         self.baud_combobox.clear()
-        self.baud_combobox.addItem("921600", 921600)
+        if (platform.system() != "Darwin"): # 921600 fails on MacOS
+            self.baud_combobox.addItem("921600", 921600)
         self.baud_combobox.addItem("460800", 460800)
         self.baud_combobox.addItem("115200", 115200)
 
