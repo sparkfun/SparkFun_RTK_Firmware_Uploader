@@ -33,13 +33,18 @@ The selected firmware is then uploaded to the connected SparkFun RTK product. Up
 
 ![Firmware Upload](images/RTK_Uploader_Windows.gif)
 
+## Extras
+
+From version 1.6.1, the ```Extras``` pull-down menu contains options to: read the ESP32 WiFi MAC address; reset the ESP32; erase the ESP32.
+
 ## Reset ESP32
 
 Clicking the ```Reset ESP32``` button will reset the ESP32 processor. This is helpful when the firmware update succeeds but does not reset the RTK correctly.
 If your RTK 'freezes' after the update, pressing ```Reset ESP32``` will get it going again.
 
-![Reset ESP32](images/RTK_Uploader_Windows_3.png)
+**Note:** from version 1.6.1, ```Reset ESP32``` can be found in the ```Extras``` pull-down menu.
 
+![Reset ESP32](images/RTK_Uploader_Windows_3.png)
 
 ## Installation
 

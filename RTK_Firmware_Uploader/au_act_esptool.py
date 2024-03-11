@@ -24,6 +24,42 @@ import esptool # pip install esptool
 
 #--------------------------------------------------------------------------------------
 # action testing
+class AUxEsptoolReadMAC(AxAction):
+
+    ACTION_ID = "esptool-read-mac"
+    NAME = "ESP32 Read MAC"
+
+    def __init__(self) -> None:
+        super().__init__(self.ACTION_ID, self.NAME)
+
+    def run_job(self, job:AxJob):
+
+        try:
+            esptool.main(job.command)
+
+        except Exception:
+            return 1
+
+        return 0
+
+class AUxEsptoolEraseFlash(AxAction):
+
+    ACTION_ID = "esptool-erase-flash"
+    NAME = "ESP32 Flash Erase"
+
+    def __init__(self) -> None:
+        super().__init__(self.ACTION_ID, self.NAME)
+
+    def run_job(self, job:AxJob):
+
+        try:
+            esptool.main(job.command)
+
+        except Exception:
+            return 1
+
+        return 0
+
 class AUxEsptoolDetectFlash(AxAction):
 
     ACTION_ID = "esptool-detect-flash"

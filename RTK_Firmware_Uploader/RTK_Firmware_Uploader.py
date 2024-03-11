@@ -10,7 +10,8 @@ Please see the LICENSE.md for more details
 # import action things - the .syntax is used since these are part of the package
 from .au_worker import AUxWorker
 from .au_action import AxJob
-from .au_act_esptool import AUxEsptoolDetectFlash, AUxEsptoolUploadFirmware, AUxEsptoolResetESP32
+from .au_act_esptool import AUxEsptoolDetectFlash, AUxEsptoolUploadFirmware, AUxEsptoolResetESP32, \
+    AUxEsptoolEraseFlash, AUxEsptoolReadMAC
 
 import darkdetect
 import sys
@@ -116,10 +117,33 @@ class MainWidget(QWidget):
     sig_message = pyqtSignal(str)
     sig_finished = pyqtSignal(int, str, int)
 
+    def _createMenuBar(self):
+        self.menuBar = QMenuBar(self)
+
+        self.extrasReadMACAction = QAction("Read WiFi MAC", self)
+        self.extrasResetAction = QAction("Reset ESP32", self)
+        self.extrasEraseAction = QAction("Erase Flash", self)
+
+        extrasMenu = self.menuBar.addMenu("Extras")
+        extrasMenu.addAction(self.extrasReadMACAction)
+        extrasMenu.addAction(self.extrasResetAction)
+        extrasMenu.addAction(self.extrasEraseAction)
+
+        self.extrasReadMACAction.triggered.connect(self.readMAC)
+        self.extrasResetAction.triggered.connect(self.tera_term_reset)
+        self.extrasEraseAction.triggered.connect(self.eraseChip)
+
+        self.extrasReadMACAction.setDisabled(False)
+        self.extrasResetAction.setDisabled(False)
+        self.extrasEraseAction.setDisabled(False)
+
     def __init__(self, parent: QWidget = None) -> None:
         super().__init__(parent)
 
         self.flashSize = 0
+        self.macAddress = "UNKNOWN"
+
+        self._createMenuBar()
 
         # File location line edit
         self.file_label = QLabel(self.tr('Firmware File:'))
@@ -152,10 +176,6 @@ class MainWidget(QWidget):
         self.update_com_ports()
         self.port_combobox.popupAboutToBeShown.connect(self.on_port_combobox)
 
-        # Reset Button
-        self.reset_btn = QPushButton(self.tr('Reset ESP32'))
-        self.reset_btn.clicked.connect(self.tera_term_reset)
-
         # Baudrate Combobox
         self.baud_label = QLabel(self.tr('Baud Rate:'))
         self.baud_combobox = QComboBox()
@@ -181,25 +201,26 @@ class MainWidget(QWidget):
 
         # Arrange Layout
         layout = QGridLayout()
-        
-        layout.addWidget(self.file_label, 1, 0)
-        layout.addWidget(self.fileLocation_lineedit, 1, 1)
-        layout.addWidget(self.browse_btn, 1, 2)
 
-        # layout.addWidget(self.partition_label, 2, 0)
-        # layout.addWidget(self.partitionFileLocation_lineedit, 2, 1)
-        # layout.addWidget(self.partition_browse_btn, 2, 2)
+        layout.addWidget(self.menuBar, 1, 0)
 
-        layout.addWidget(self.port_label, 2, 0)
-        layout.addWidget(self.port_combobox, 2, 1)
-        layout.addWidget(self.reset_btn, 2, 2)
+        layout.addWidget(self.file_label, 2, 0)
+        layout.addWidget(self.fileLocation_lineedit, 2, 1)
+        layout.addWidget(self.browse_btn, 2, 2)
 
-        layout.addWidget(self.baud_label, 3, 0)
-        layout.addWidget(self.baud_combobox, 3, 1)
-        layout.addWidget(self.upload_btn, 3, 2)
+        # layout.addWidget(self.partition_label, 3, 0)
+        # layout.addWidget(self.partitionFileLocation_lineedit, 3, 1)
+        # layout.addWidget(self.partition_browse_btn, 3, 2)
 
-        layout.addWidget(self.messages_label, 4, 0)
-        layout.addWidget(self.messageBox, 5, 0, 5, 3)
+        layout.addWidget(self.port_label, 3, 0)
+        layout.addWidget(self.port_combobox, 3, 1)
+
+        layout.addWidget(self.baud_label, 4, 0)
+        layout.addWidget(self.baud_combobox, 4, 1)
+        layout.addWidget(self.upload_btn, 4, 2)
+
+        layout.addWidget(self.messages_label, 5, 0)
+        layout.addWidget(self.messageBox, 6, 0, 6, 3)
 
         self.setLayout(layout)
 
@@ -222,7 +243,8 @@ class MainWidget(QWidget):
 
         # add the actions/commands for this app to the background processing thread.
         # These actions are passed jobs to execute.
-        self._worker.add_action(AUxEsptoolDetectFlash(), AUxEsptoolUploadFirmware(), AUxEsptoolResetESP32())
+        self._worker.add_action(AUxEsptoolDetectFlash(), AUxEsptoolUploadFirmware(), AUxEsptoolResetESP32(), \
+                                AUxEsptoolEraseFlash(), AUxEsptoolReadMAC())
 
     #--------------------------------------------------------------
     # callback function for the background worker.
@@ -269,6 +291,10 @@ class MainWidget(QWidget):
         elif msg.find("Detected flash size: ") >= 0:
             self.flashSize = 0
 
+        macAddrPtr = msg.find("MAC: ")
+        if macAddrPtr >= 0:
+            self.macAddress = msg[macAddrPtr + len("MAC: "):]
+
     @pyqtSlot(str)
     def writeMessage(self, msg: str) -> None:
         self.messageBox.moveCursor(QTextCursor.End)
@@ -287,18 +313,29 @@ class MainWidget(QWidget):
     @pyqtSlot(int, str, int)
     def on_finished(self, status, action_type, job_id) -> None:
 
+        # If the Read MAC is finished, re-enable the UX
+        if action_type == AUxEsptoolReadMAC.ACTION_ID:
+            self.writeMessage("Read MAC complete...")
+            self.writeMessage("WiFi MAC Address is {}".format(self.macAddress))
+            self.disable_interface(False)
+
+        # If the flash erase is finished, re-enable the UX
+        if action_type == AUxEsptoolEraseFlash.ACTION_ID:
+            self.writeMessage("Flash erase complete...")
+            self.disable_interface(False)
+
         # If the flash detection is finished, trigger the upload
         if action_type == AUxEsptoolDetectFlash.ACTION_ID:
             self.writeMessage("Flash detection complete. Uploading firmware...")
             self.do_upload()
 
         # If the upload is finished, trigger a reset
-        elif action_type == AUxEsptoolUploadFirmware.ACTION_ID:
+        if action_type == AUxEsptoolUploadFirmware.ACTION_ID:
             self.writeMessage("Firmware upload complete. Resetting ESP32...")
             self.esptool_reset()
 
-        # re-enable the UX
-        else:
+        # If the reset is finished, re-enable the UX
+        if action_type == AUxEsptoolResetESP32.ACTION_ID:
             self.writeMessage("Reset complete...")
             self.disable_interface(False)
 
@@ -375,8 +412,7 @@ class MainWidget(QWidget):
         # Highest speed first so code defaults to that
         # if settings.value(SETTING_BAUD_RATE) is None
         self.baud_combobox.clear()
-        if (platform.system() != "Darwin"): # 921600 fails on MacOS
-            self.baud_combobox.addItem("921600", 921600)
+        self.baud_combobox.addItem("921600", 921600)
         self.baud_combobox.addItem("460800", 460800)
         self.baud_combobox.addItem("115200", 115200)
 
@@ -444,7 +480,77 @@ class MainWidget(QWidget):
     def disable_interface(self, bDisable=False):
 
         self.upload_btn.setDisabled(bDisable)
-        self.reset_btn.setDisabled(bDisable)
+        self.extrasEraseAction.setDisabled(bDisable)
+        self.extrasReadMACAction.setDisabled(bDisable)
+        self.extrasResetAction.setDisabled(bDisable)
+
+    def eraseChip(self) -> None:
+        """Perform erase_flash"""
+        portAvailable = False
+        for desc, name, sys in gen_serial_ports():
+            if (sys == self.port):
+                portAvailable = True
+        if (portAvailable == False):
+            self.writeMessage("Port No Longer Available")
+            return
+
+        try:
+            self._save_settings() # Save the settings in case the command fails
+        except:
+            pass
+
+        self.writeMessage("Erasing flash\n\n")
+
+        command = []
+        command.extend(["--chip","esp32"])
+        command.extend(["--port",self.port])
+        command.extend(["--before","default_reset"])
+        command.extend(["erase_flash"])
+
+        # Create a job and add it to the job queue. The worker thread will pick this up and
+        # process the job. Can set job values using dictionary syntax, or attribute assignments
+        #
+        # Note - the job is defined with the ID of the target action
+        theJob = AxJob(AUxEsptoolEraseFlash.ACTION_ID, {"command":command})
+
+        # Send the job to the worker to process
+        self._worker.add_job(theJob)
+
+        self.disable_interface(True)
+
+    def readMAC(self) -> None:
+        """Perform read_mac"""
+        portAvailable = False
+        for desc, name, sys in gen_serial_ports():
+            if (sys == self.port):
+                portAvailable = True
+        if (portAvailable == False):
+            self.writeMessage("Port No Longer Available")
+            return
+
+        try:
+            self._save_settings() # Save the settings in case the command fails
+        except:
+            pass
+
+        self.writeMessage("Reading WiFi MAC address\n\n")
+
+        command = []
+        command.extend(["--chip","esp32"])
+        command.extend(["--port",self.port])
+        command.extend(["--before","default_reset"])
+        command.extend(["read_mac"])
+
+        # Create a job and add it to the job queue. The worker thread will pick this up and
+        # process the job. Can set job values using dictionary syntax, or attribute assignments
+        #
+        # Note - the job is defined with the ID of the target action
+        theJob = AxJob(AUxEsptoolReadMAC.ACTION_ID, {"command":command})
+
+        # Send the job to the worker to process
+        self._worker.add_job(theJob)
+
+        self.disable_interface(True)
 
     def on_upload_btn_pressed(self) -> None:
         """Get ready to upload the firmware. First, detect the flash size"""
@@ -468,7 +574,6 @@ class MainWidget(QWidget):
         command = []
         command.extend(["--chip","esp32"])
         command.extend(["--port",self.port])
-        command.extend(["--baud",self.baudRate])
         command.extend(["--before","default_reset","--after","no_reset"])
         command.extend(["flash_id"])
 
@@ -550,11 +655,20 @@ class MainWidget(QWidget):
         sleep(1.0);
         self.writeMessage("Uploading firmware\n")
 
+        baud = self.baudRate
+        if baud == "921600":
+            if (platform.system() == "Darwin"): # 921600 fails on MacOS
+                self.writeMessage("MacOS detected. Limiting baud to 460800\n")
+                baud = "460800"
+            if (str(self.port_combobox.currentText()).find("CH342") >= 0): # 921600 fails on CH342
+                self.writeMessage("CH342 detected. Limiting baud to 460800\n")
+                baud = "460800"
+
         command = []
         #command.extend(["--trace"]) # Useful for debugging
         command.extend(["--chip","esp32"])
         command.extend(["--port",self.port])
-        command.extend(["--baud",self.baudRate])
+        command.extend(["--baud",baud])
         command.extend(["--before","default_reset","--after","no_reset","write_flash","-z","--flash_mode","dio","--flash_freq","80m","--flash_size","detect"])
         command.extend(["0x1000",resource_path("RTK_Surveyor.ino.bootloader.bin")])
         command.extend(["0x8000",thePartitionFileName])
