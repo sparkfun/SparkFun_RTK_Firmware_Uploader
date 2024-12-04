@@ -641,6 +641,10 @@ class MainWidget(QWidget):
             thePartitionFileName = resource_path("RTK_Surveyor_Partitions_16MB.bin")
             # if self.theFileName.find("16MB") < 0:
             #     firmwareSizeCorrect = False
+        elif self.flashSize == 8:
+            thePartitionFileName = resource_path("RTK_Everywhere_Partitions_8MB.bin")
+            # if self.theFileName.find("8MB") < 0:
+            #     firmwareSizeCorrect = False
         else:
             thePartitionFileName = resource_path("RTK_Surveyor_Partitions_4MB.bin")
             # if self.theFileName.find("4MB") < 0:
@@ -660,8 +664,8 @@ class MainWidget(QWidget):
             if (platform.system() == "Darwin"): # 921600 fails on MacOS
                 self.writeMessage("MacOS detected. Limiting baud to 460800\n")
                 baud = "460800"
-            if (str(self.port_combobox.currentText()).find("CH342") >= 0): # 921600 fails on CH342
-                self.writeMessage("CH342 detected. Limiting baud to 460800\n")
+            if ((str(self.port_combobox.currentText()).find("CH342") >= 0) and (self.flashSize == 16)): # 921600 fails on CH342 + 16MB ESP32 (ie, RTK Torch)
+                self.writeMessage("RTK Torch detected. Limiting baud to 460800\n")
                 baud = "460800"
 
         command = []
