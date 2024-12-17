@@ -25,10 +25,10 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.12'
 
       # Setup python
       - name: System Setup
@@ -39,12 +39,13 @@ jobs:
       - name: Build Linux Installer
         run: |
           ESPTOOL_LOCATION=$(pip show esptool | grep "Location: " | cut -c 11- | tr -d '\n')
-          ESPTOOL_TARGETS=$(echo "${ESPTOOL_LOCATION}/esptool/targets/stub_flasher/*.json:./esptool/targets/stub_flasher/")
-          pyinstaller --onefile --clean --name RTKUploader --noconsole --distpath=. --icon=RTK_Firmware_Uploader/resource/RTK.ico --add-data="RTK_Firmware_Uploader/resource/*:resource/" --add-data="${ESPTOOL_TARGETS}" RTK_Firmware_Upload.py
+          ESPTOOL_TARGETS_1=$(echo "${ESPTOOL_LOCATION}/esptool/targets/stub_flasher/1/*.json:./esptool/targets/stub_flasher/1/")
+          ESPTOOL_TARGETS_2=$(echo "${ESPTOOL_LOCATION}/esptool/targets/stub_flasher/2/*.json:./esptool/targets/stub_flasher/2/")
+          pyinstaller --onefile --clean --name RTKUploader --noconsole --distpath=. --icon=RTK_Firmware_Uploader/resource/RTK.ico --add-data="RTK_Firmware_Uploader/resource/*:resource/" --add-data="${ESPTOOL_TARGETS_1}" --add-data="${ESPTOOL_TARGETS_2}" RTK_Firmware_Upload.py
           gzip RTKUploader
           mv RTKUploader.gz RTKUploader.linux.gz
           
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: RTKUploader.linux.gz
           path: RTKUploader.linux.gz

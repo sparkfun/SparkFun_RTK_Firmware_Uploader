@@ -266,7 +266,7 @@ class MainWidget(QWidget):
         elif msg_type == AUxWorker.TYPE_FINISHED:
             # finished takes 3 args - status, job type, and job id
             if len(args) < 4:
-                self.writeMessage("Invalid parameters from the uploader.");
+                self.writeMessage("Invalid parameters from the uploader.")
                 return;
 
             self.sig_finished.emit(args[1], args[2], args[3])
@@ -635,24 +635,37 @@ class MainWidget(QWidget):
         else:
             self.writeMessage("Flash size is " + str(self.flashSize) + "MB\n")
 
-        thePartitionFileName = ''
+        thePartitionFileName = resource_path("RTK_Surveyor_Partitions_16MB.bin")
         firmwareSizeCorrect = True
-        if self.flashSize == 16:
-            thePartitionFileName = resource_path("RTK_Surveyor_Partitions_16MB.bin")
-            # if self.theFileName.find("16MB") < 0:
-            #     firmwareSizeCorrect = False
-        else:
+        if self.flashSize == 16: # Could be RTK Firmware or RTK Everywhere
+            pass # Nothing to do
+        elif self.flashSize == 8: # RTK Postcard (ESP32 Pico Mini)
+            thePartitionFileName = resource_path("RTK_Everywhere_Partitions_8MB.bin")
+            if self.theFileName.find("RTK_Everywhere_Firmware") < 0:
+                self.writeMessage("Flash size is 8MB. RTK Everywhere Firmware not detected\n")
+                firmwareSizeCorrect = False
+        elif self.flashSize == 4: # Original RTK Surveyor
             thePartitionFileName = resource_path("RTK_Surveyor_Partitions_4MB.bin")
-            # if self.theFileName.find("4MB") < 0:
-            #     firmwareSizeCorrect = False
+            if self.theFileName.find("RTK_Surveyor_Firmware") < 0:
+                self.writeMessage("Flash size is 4MB. RTK Surveyor Firmware not detected\n")
+                firmwareSizeCorrect = False
+        else:
+            firmwareSizeCorrect = False
 
         if firmwareSizeCorrect == False:
-            reply = QMessageBox.warning(self, "Firmware size mismatch", "Do you want to continue?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+            reply = QMessageBox.warning(self, "Firmware and flash size mismatch", "Do you want to continue?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
             if reply == QMessageBox.No:
                 self.disable_interface(False)
                 return
 
-        sleep(1.0);
+        theBootloaderFileName = resource_path("RTK_Surveyor.ino.bootloader.bin")
+        if self.theFileName.find("RTK_Everywhere_Firmware") >= 0:
+            theBootloaderFileName = resource_path("RTK_Everywhere.ino.bootloader.bin")
+            self.writeMessage("RTK Everywhere Firmware detected. Using RTK_Everywhere.ino.bootloader.bin\n")
+        else:
+            self.writeMessage("Using RTK_Surveyor.ino.bootloader.bin\n")
+
+        sleep(1.0)
         self.writeMessage("Uploading firmware\n")
 
         baud = self.baudRate
@@ -660,8 +673,8 @@ class MainWidget(QWidget):
             if (platform.system() == "Darwin"): # 921600 fails on MacOS
                 self.writeMessage("MacOS detected. Limiting baud to 460800\n")
                 baud = "460800"
-            if (str(self.port_combobox.currentText()).find("CH342") >= 0): # 921600 fails on CH342
-                self.writeMessage("CH342 detected. Limiting baud to 460800\n")
+            if ((str(self.port_combobox.currentText()).find("CH342") >= 0) and (self.flashSize == 16)): # 921600 fails on CH342 + 16MB ESP32 (ie, RTK Torch)
+                self.writeMessage("RTK Torch detected. Limiting baud to 460800\n")
                 baud = "460800"
 
         command = []
@@ -670,7 +683,7 @@ class MainWidget(QWidget):
         command.extend(["--port",self.port])
         command.extend(["--baud",baud])
         command.extend(["--before","default_reset","--after","no_reset","write_flash","-z","--flash_mode","dio","--flash_freq","80m","--flash_size","detect"])
-        command.extend(["0x1000",resource_path("RTK_Surveyor.ino.bootloader.bin")])
+        command.extend(["0x1000",theBootloaderFileName])
         command.extend(["0x8000",thePartitionFileName])
         command.extend(["0xe000",resource_path("boot_app0.bin")])
         command.extend(["0x10000",self.theFileName])
@@ -704,7 +717,7 @@ class MainWidget(QWidget):
         except:
             pass
 
-        sleep(1.0);
+        sleep(1.0)
         self.writeMessage("Resetting ESP32\n")
 
         # ---- The esptool method -----
