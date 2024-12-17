@@ -40,8 +40,9 @@ jobs:
       - name: Build Mac Installer
         run: |
           ESPTOOL_LOCATION=$(pip show esptool | grep "Location: " | cut -c 11- | tr -d '\n')
-          ESPTOOL_TARGETS=$(echo "${ESPTOOL_LOCATION}/esptool/targets/stub_flasher/*.json:./esptool/targets/stub_flasher/")
-          pyinstaller --windowed -n RTKUploader --noconsole --distpath=. --icon=RTK_Firmware_Uploader/resource/RTK.ico --add-data="RTK_Firmware_Uploader/resource/*:resource/" --add-data="${ESPTOOL_TARGETS}" RTK_Firmware_Upload.py
+          ESPTOOL_TARGETS_1=$(echo "${ESPTOOL_LOCATION}/esptool/targets/stub_flasher/1/*.json:./esptool/targets/stub_flasher/1/")
+          ESPTOOL_TARGETS_2=$(echo "${ESPTOOL_LOCATION}/esptool/targets/stub_flasher/2/*.json:./esptool/targets/stub_flasher/2/")
+          pyinstaller --windowed -n RTKUploader --noconsole --distpath=. --icon=RTK_Firmware_Uploader/resource/RTK.ico --add-data="RTK_Firmware_Uploader/resource/*:resource/" --add-data="${ESPTOOL_TARGETS_1}" --add-data="${ESPTOOL_TARGETS_2}" RTK_Firmware_Upload.py
           mkdir tmp
           mv "RTKUploader.app" "tmp/"
           create-dmg --volicon "RTK_Firmware_Uploader/resource/sparkdisk.icns" --background "RTK_Firmware_Uploader/resource/sfe_logo_med.png" --hide-extension "RTKUploader.app" --icon "RTKUploader.app" 100 100 --window-size 600 440 --app-drop-link 400 100 "RTKUploader.dmg" "tmp/"
