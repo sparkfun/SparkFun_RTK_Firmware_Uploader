@@ -25,8 +25,8 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
@@ -47,7 +47,7 @@ jobs:
           mv "RTKUploader.app" "tmp/"
           create-dmg --volicon "RTK_Firmware_Uploader/resource/sparkdisk.icns" --background "RTK_Firmware_Uploader/resource/sfe_logo_med.png" --hide-extension "RTKUploader.app" --icon "RTKUploader.app" 100 100 --window-size 600 440 --app-drop-link 400 100 "RTKUploader.dmg" "tmp/"
           
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: RTKUploader.dmg
           path: RTKUploader.dmg
