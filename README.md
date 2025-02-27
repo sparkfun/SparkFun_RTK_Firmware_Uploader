@@ -83,7 +83,11 @@ Click the arrow next to **Assets** if required to see the installers:
 ![Windows Installation Step 5](images/RTK_Uploader_Windows_Install_5.png)
 
 ### macOS
+
 * Download the [github release](https://github.com/sparkfun/SparkFun_RTK_Firmware_Uploader/releases) file - *RTKUploader.dmg*
+
+![macOS Installation Step 1](images/RTK_Uploader_macOS_Install_1.png)
+
 * Double click the *RTKUploader.dmg* file to mount the disk image. 
 * A Finder window, with the contents of the file will open
 * Install the *RTKUploader.app* by dragging it on the *Applications* in the RTKUploader Finder Window, or copying the file to a desired location.
