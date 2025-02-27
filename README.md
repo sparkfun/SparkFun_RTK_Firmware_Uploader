@@ -120,7 +120,7 @@ To download and install the RTK Uploader:
 
 ![macOS Installation Step 1](images/RTK_Uploader_macOS_Install_1.png)
 
-* Click on the Downloads icon, then double-click the *RTKUploader.dmg* file to mount the disk image. 
+* Click on the Downloads icon, then double-click the *RTKUploader.dmg* file to mount the disk image
 
 ![macOS Installation Step 2](images/RTK_Uploader_macOS_Install_2.png)
 
@@ -128,11 +128,11 @@ To download and install the RTK Uploader:
 
 ![macOS Installation Step 3](images/RTK_Uploader_macOS_Install_3.png)
 
-* Install the *RTKUploader.app* by dragging it onto the *Applications* folder.
+* Install the *RTKUploader.app* by dragging it onto the *Applications* folder
 
 ![macOS Installation Step 4](images/RTK_Uploader_macOS_Install_4.gif)
 
-* Unmount the RTKUploader disk image by opening Finder and ejecting it.
+* Unmount the RTKUploader disk image by opening Finder and ejecting it
 
 ![macOS Installation Step 5](images/RTK_Uploader_macOS_Install_5.png)
 
@@ -144,36 +144,37 @@ To launch the RTK Uploader application:
 
 ![macOS Installation Step 6](images/RTK_Uploader_macOS_Install_6.png)
 
-* The RTKUploader.app isn't signed, so macOS won't run the application, and will display a warning dialog. Click **Done**.
+* The RTKUploader.app isn't signed, so macOS won't run the application, and will display a warning dialog. Click **Done**
 
 ![macOS Installation Step 7](images/RTK_Uploader_macOS_Install_7.png)
 
-* To approve app execution bring up the macOS *System Preferences* and navigate to: *Security & Privacy > General*. 
-* On this page, select the *Open Anyway* button to launch the RTKUploader application.
+* To approve app execution bring up the macOS *System Settings* and navigate to *Privacy & Security*
+* On this page, select the *Open Anyway* button to launch the RTKUploader application
 
 ![macOS Installation Step 8](images/RTK_Uploader_macOS_Install_8.png)
 
-* Once selected, macOS will present one last dialog. Select **Open Anyway** to run the application.
+* Once selected, macOS will present one last dialog. Select **Open Anyway** to run the application
 
 ![macOS Installation Step 9](images/RTK_Uploader_macOS_Install_9.png)
 
-* Enter your password and click OK. The RTKUploader will now start.
+* Enter your password and click OK. The RTKUploader will now start
 
 ![macOS Installation Step 10](images/RTK_Uploader_macOS_Install_10.png)
 
-* Select the Firmware File using the Browse button. Select the WCH **cu.wchusbserial** port. Ignore the tty.wchusbserial port.
+* Select the Firmware File using the Browse button. Select the WCH **cu.wchusbserial** port. Ignore the tty.wchusbserial port
 
 ![macOS Installation Step 11](images/RTK_Uploader_macOS_Install_11.png)
 
 ## Linux
+
 * Download the [github release](https://github.com/sparkfun/SparkFun_RTK_Firmware_Uploader/releases) file - *RTKUploader.linux.gz*
 * Un-gzip the file, either by double-clicking in on the desktop, or using the `gunzip` command in a terminal window. This results in the file *RTKUploader* 
-* To run the application, the file must have *execute* permission. This is performed by selecting *Properties* from the file right-click menu, and then selecting permissions. You can also change permissions using the `chmod` command in a terminal window.
+* To run the application, the file must have *execute* permission. This is performed by selecting *Properties* from the file right-click menu, and then selecting permissions. You can also change permissions using the `chmod` command in a terminal window
 * Once the application has execute permission, you can start the application a terminal window. Change directory's to the application location and issue `./RTKUploader`
 * You may need to install drivers for the CH340 USB interface chip. Full instructions can be found in our [CH340 Tutorial](https://learn.sparkfun.com/tutorials/how-to-install-ch340-drivers/all#linux)
 
-
 ## Python Package
+
 The RTK Firmware Uploader is also provided as an installable Python package. This is advantageous for platforms that lack a pre-compiled application. 
 
 To install the Python package:
@@ -187,7 +188,7 @@ At a command line - issue the package install command:
 
 Notes:
 * A path might be needed to specify the install file location.
-* Depending on your platform, this command might need to be run as admin/root.
+* Depending on your platform, this command might need to be run as admin/root
 * Depending on your system, you might need to use the command `pip3`
 
 ### Raspberry Pi
