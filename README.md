@@ -5,9 +5,22 @@ SparkFun RTK Firmware Uploader
 
 The RTK Firmware Uploader is a simple, easy to use method for updating the firmware on SparkFun RTK products. Available on all major platforms, as well as a Python package, the Uploader simplifies working with SparkFun RTK products. 
 
-If you need to install the application, see the [Installation Section](#installation) of this page.
+# Contents
 
-## Notes:
+* [Notes](#notes)
+* [Using the RTK Firmware Uploader](#using-the-rtk-firmware-uploader)
+    * [Upload Firmware](#upload-firmware)
+    * [Extras](#extras)
+        * [Reset ESP32](#reset-esp32)
+        * [Erase Flash](#erase-flash)
+* [Installation](#installation)
+    * [Windows Installation](#windows)
+    * [macOS Installation](#macos)
+    * [Linux Installation](#linux)
+    * [Python Package](#python-package)
+        * [Raspberry Pi](#raspberry-pi)
+
+# Notes:
 
 From v1.6.0, this GUI does not contain a copy of ```esptool.py```. Instead the latest ```esptool.py``` is installed and used by the build workflow. If you want to run ```RTK_Firmware_Upload.py``` locally, you will need to ```pip install esptool``` first. v1.7.0 of the GUI was written for and tested with v4.8.1 of esptool.
 
@@ -39,16 +52,20 @@ The selected firmware is then uploaded to the connected SparkFun RTK product. Up
 
 From version 1.6.1, the ```Extras``` pull-down menu contains options to: read the ESP32 WiFi MAC address; reset the ESP32; erase the ESP32.
 
-## Reset ESP32
+### Reset ESP32
 
 Clicking the ```Reset ESP32``` button will reset the ESP32 processor. This is helpful when the firmware update succeeds but does not reset the RTK correctly.
 If your RTK 'freezes' after the update, pressing ```Reset ESP32``` will get it going again.
 
-**Note:** from version 1.6.1, ```Reset ESP32``` can be found in the ```Extras``` pull-down menu.
-
 ![Reset ESP32](images/RTK_Uploader_Windows_3.png)
 
-## Installation
+### Erase Flash
+
+Clicking the ```Erase Flash``` button will completely erase the ESP32 flash memory - including the LittleFS file system. This can be useful if you need to completely reset the firmware settings.
+
+![Erase Flash](images/RTK_Uploader_Windows_5.png)
+
+# Installation
 
 Installation binaries are available for all major platforms (macOS, Window, and Linux) on the release page of the RTK Uploader GitHub repository:
 
@@ -59,7 +76,7 @@ Click the arrow next to **Assets** if required to see the installers:
 ![Releases Assets](images/RTK_Uploader_Assets.png)
 
 
-### Windows
+## Windows
 
 * Download the [github release](https://github.com/sparkfun/SparkFun_RTK_Firmware_Uploader/releases) zip file - *RTKUploader.win.zip*
 
@@ -82,7 +99,7 @@ Click the arrow next to **Assets** if required to see the installers:
 
 ![Windows Installation Step 5](images/RTK_Uploader_Windows_Install_5.png)
 
-### macOS
+## macOS
 
 * Download the [github release](https://github.com/sparkfun/SparkFun_RTK_Firmware_Uploader/releases) file - *RTKUploader.dmg*
 
@@ -101,7 +118,7 @@ To launch the RTK Uploader application:
 * On this page, select the *Open Anyway* button to launch the RTKUploader application.
 * Once selected, macOS will present one last dialog. Select *Open* to run the application. The RTKUploader will now start.
 
-### Linux
+## Linux
 * Download the [github release](https://github.com/sparkfun/SparkFun_RTK_Firmware_Uploader/releases) file - *RTKUploader.linux.gz*
 * Un-gzip the file, either by double-clicking in on the desktop, or using the `gunzip` command in a terminal window. This results in the file *RTKUploader* 
 * To run the application, the file must have *execute* permission. This is performed by selecting *Properties* from the file right-click menu, and then selecting permissions. You can also change permissions using the `chmod` command in a terminal window.
@@ -109,7 +126,7 @@ To launch the RTK Uploader application:
 * You may need to install drivers for the CH340 USB interface chip. Full instructions can be found in our [CH340 Tutorial](https://learn.sparkfun.com/tutorials/how-to-install-ch340-drivers/all#linux)
 
 
-### Python Package
+## Python Package
 The RTK Firmware Uploader is also provided as an installable Python package. This is advantageous for platforms that lack a pre-compiled application. 
 
 To install the Python package:
