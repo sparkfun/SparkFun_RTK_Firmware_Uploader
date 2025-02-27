@@ -9,7 +9,7 @@ If you need to install the application, see the [Installation Section](#installa
 
 ## Notes:
 
-From v1.6.0, this GUI does not contain a copy of ```esptool.py```. Instead the latest ```esptool.py``` is installed and used by the build workflow. If you want to run ```RTK_Firmware_Upload.py``` locally, you will need to ```pip install esptool``` first. v1.6.0 of the GUI was written for and tested with v4.7.0 of esptool.
+From v1.6.0, this GUI does not contain a copy of ```esptool.py```. Instead the latest ```esptool.py``` is installed and used by the build workflow. If you want to run ```RTK_Firmware_Upload.py``` locally, you will need to ```pip install esptool``` first. v1.7.0 of the GUI was written for and tested with v4.8.1 of esptool.
 
 # Using the RTK Firmware Uploader
   
@@ -22,8 +22,10 @@ From v1.6.0, this GUI does not contain a copy of ```esptool.py```. Instead the l
 
 * Adjust the Baud Rate if desired
 * Click ```Browse``` and select the firmware file you'd like to upload (the filename should end in *.bin*)
-  * You can find the firmware in the [SparkFun_RTK_Firmware_Binaries repo on GitHub](https://github.com/sparkfun/SparkFun_RTK_Firmware_Binaries)
-  * The older versions of the firmware are in a [separate folder](https://github.com/sparkfun/SparkFun_RTK_Firmware_Binaries/tree/main/PreviousVersions)
+    * For RTK Firmware: [SparkFun_RTK_Firmware_Binaries repo on GitHub](https://github.com/sparkfun/SparkFun_RTK_Firmware_Binaries)
+        * The previous versions of RTK Firmware are in a [separate folder](https://github.com/sparkfun/SparkFun_RTK_Firmware_Binaries/tree/main/PreviousVersions)
+    * For RTK Everywhere Firmware: [SparkFun_RTK_Everywhere_Firmware_Binaries](https://github.com/sparkfun/SparkFun_RTK_Everywhere_Firmware_Binaries)
+        * The previous versions of RTK Everywhere are in a [separate folder](https://github.com/sparkfun/SparkFun_RTK_Everywhere_Firmware_Binaries/tree/main/PreviousVersions)
 
 ![Select Firmware](images/RTK_Uploader_Windows_4.png)
 
@@ -58,12 +60,27 @@ Click the arrow next to **Assets** if required to see the installers:
 
 
 ### Windows
+
 * Download the [github release](https://github.com/sparkfun/SparkFun_RTK_Firmware_Uploader/releases) zip file - *RTKUploader.win.zip*
-* Unzip the release file - *RTKUploader.zip*
+
+![Windows Installation Step 1](images/RTK_Uploader_Windows_Install_1.png)
+
+* Right-click the *RTKUploader.win.zip* and select "Extract All" to unzip it
+
+![Windows Installation Step 2](images/RTK_Uploader_Windows_Install_2.png)
+
 * This results in the application executable, *RTKUploader.exe*
+
+![Windows Installation Step 3](images/RTK_Uploader_Windows_Install_3.png)
+
 * Double-click *RTKUploader.exe* to start the application
 * The executable isn't signed, so you will see a *Windows protected your PC* warning
+
+![Windows Installation Step 4](images/RTK_Uploader_Windows_Install_4.png)
+
 * Click *More info* and *Run anyway* to run the executable
+
+![Windows Installation Step 5](images/RTK_Uploader_Windows_Install_5.png)
 
 ### macOS
 * Download the [github release](https://github.com/sparkfun/SparkFun_RTK_Firmware_Uploader/releases) file - *RTKUploader.dmg*
