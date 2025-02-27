@@ -101,22 +101,59 @@ Click the arrow next to **Assets** if required to see the installers:
 
 ## macOS
 
+Before you begin, check you have drivers for the CH340 USB interface chip installed.
+    * Full instructions can be found in our [CH340 Tutorial](https://learn.sparkfun.com/tutorials/how-to-install-ch340-drivers/all#mac-osx)
+    * Here is a link to the WCH downloads page for the [CH340 / CH341 macOS driver](https://www.wch-ic.com/downloads/CH341SER_MAC_ZIP.html)
+    * The Zip file contains more instructions: CH34X_DRV_INSTAL_INSTRUCTIONS.pdf
+
+To download and install the RTK Uploader:
+
 * Download the [github release](https://github.com/sparkfun/SparkFun_RTK_Firmware_Uploader/releases) file - *RTKUploader.dmg*
 
 ![macOS Installation Step 1](images/RTK_Uploader_macOS_Install_1.png)
 
-* Double click the *RTKUploader.dmg* file to mount the disk image. 
+* Click on the Downloads icon, then double-click the *RTKUploader.dmg* file to mount the disk image. 
+
+![macOS Installation Step 2](images/RTK_Uploader_macOS_Install_2.png)
+
 * A Finder window, with the contents of the file will open
-* Install the *RTKUploader.app* by dragging it on the *Applications* in the RTKUploader Finder Window, or copying the file to a desired location.
-* Once complete, unmount the RTKUploader disk image by right-clicking on the mounted disk in Finder and ejecting it.
-* You may need to install drivers for the CH340 USB interface chip. Full instructions can be found in our [CH340 Tutorial](https://learn.sparkfun.com/tutorials/how-to-install-ch340-drivers/all#mac-osx)
+
+![macOS Installation Step 3](images/RTK_Uploader_macOS_Install_3.png)
+
+* Install the *RTKUploader.app* by dragging it onto the *Applications* folder.
+
+![macOS Installation Step 4](images/RTK_Uploader_macOS_Install_4.gif)
+
+* Unmount the RTKUploader disk image by opening Finder and ejecting it.
+
+![macOS Installation Step 5](images/RTK_Uploader_macOS_Install_5.png)
 
 To launch the RTK Uploader application:
+
 * Double-click RTKUploader.app to launch the application
-* The RTKUploader.app isn't signed, so macOS won't run the application, and will display a warning dialog. Dismiss this dialog.
+
+![macOS Installation Step 6](images/RTK_Uploader_macOS_Install_6.png)
+
+* The RTKUploader.app isn't signed, so macOS won't run the application, and will display a warning dialog. Click **Done**.
+
+![macOS Installation Step 7](images/RTK_Uploader_macOS_Install_7.png)
+
 * To approve app execution bring up the macOS *System Preferences* and navigate to: *Security & Privacy > General*. 
 * On this page, select the *Open Anyway* button to launch the RTKUploader application.
-* Once selected, macOS will present one last dialog. Select *Open* to run the application. The RTKUploader will now start.
+
+![macOS Installation Step 8](images/RTK_Uploader_macOS_Install_8.png)
+
+* Once selected, macOS will present one last dialog. Select **Open Anyway** to run the application.
+
+![macOS Installation Step 9](images/RTK_Uploader_macOS_Install_9.png)
+
+* Enter your password and click OK. The RTKUploader will now start.
+
+![macOS Installation Step 10](images/RTK_Uploader_macOS_Install_10.png)
+
+* Select the Firmware File using the Browse button. Select the WCH **cu.wchusbserial** port. Ignore the tty.wchusbserial port.
+
+![macOS Installation Step 11](images/RTK_Uploader_macOS_Install_11.png)
 
 ## Linux
 * Download the [github release](https://github.com/sparkfun/SparkFun_RTK_Firmware_Uploader/releases) file - *RTKUploader.linux.gz*
