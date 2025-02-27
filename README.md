@@ -165,6 +165,8 @@ To launch the RTK Uploader application:
 
 ![macOS Installation Step 11](images/RTK_Uploader_macOS_Install_11.png)
 
+![macOS Upload](images/RTK_Uploader_macOS_Install_12.gif)
+
 ## Linux
 
 * Download the [github release](https://github.com/sparkfun/SparkFun_RTK_Firmware_Uploader/releases) file - *RTKUploader.linux.gz*
