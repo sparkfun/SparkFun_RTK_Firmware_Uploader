@@ -16,6 +16,9 @@ The RTK Firmware Uploader is a simple, easy to use method for updating the firmw
 * [Installation](#installation)
     * [Windows Installation](#windows)
     * [macOS Installation](#macos)
+        * [Install the CH340 USB drivers](#install-the-ch340-usb-drivers)
+        * [Download and install the RTK Uploader](#download-and-install-the-rtk-uploader)
+        * [Launch the RTK Uploader application](#launch-the-rtk-uploader-application)
     * [Linux Installation](#linux)
     * [Python Package](#python-package)
         * [Raspberry Pi](#raspberry-pi)
@@ -101,10 +104,15 @@ Click the arrow next to **Assets** if required to see the installers:
 
 ## macOS
 
-Before you begin, check you have drivers for the CH340 USB interface chip installed.
-    * Full instructions can be found in our [CH340 Tutorial](https://learn.sparkfun.com/tutorials/how-to-install-ch340-drivers/all#mac-osx)
-    * Here is a link to the WCH downloads page for the [CH340 / CH341 macOS driver](https://www.wch-ic.com/downloads/CH341SER_MAC_ZIP.html)
-    * The Zip file contains more instructions: CH34X_DRV_INSTAL_INSTRUCTIONS.pdf
+### Install the CH340 USB drivers
+
+Before you begin, check you have drivers for the CH340 USB interface chip installed:
+
+* Full instructions can be found in our [CH340 Tutorial](https://learn.sparkfun.com/tutorials/how-to-install-ch340-drivers/all#mac-osx)
+* Here is a link to the WCH downloads page for the [CH340 / CH341 macOS driver](https://www.wch-ic.com/downloads/CH341SER_MAC_ZIP.html)
+* The Zip file contains more instructions: CH34X_DRV_INSTAL_INSTRUCTIONS.pdf
+
+### Download and install the RTK Uploader
 
 To download and install the RTK Uploader:
 
@@ -127,6 +135,8 @@ To download and install the RTK Uploader:
 * Unmount the RTKUploader disk image by opening Finder and ejecting it.
 
 ![macOS Installation Step 5](images/RTK_Uploader_macOS_Install_5.png)
+
+### Launch the RTK Uploader application
 
 To launch the RTK Uploader application:
 
